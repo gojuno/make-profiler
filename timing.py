@@ -2,7 +2,7 @@ import time
 import os
 
 
-def parse_timing_db(filename='make_profile.db'):
+def parse_timing_db(filename):
     lines = [i.strip().split() for i in open(filename)]
     lines.reverse()
     cur_run_bid = ''
