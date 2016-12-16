@@ -45,7 +45,7 @@ def dot_node(name, performance):
         node['image'] = name
         node['imagescale'] = 'true'
         node['width'] = '1'
-    node = ','.join(['%s="%s"' % (k, v) for k, v in node.iteritems()])
+    node = ','.join(['%s="%s"' % (k, v) for k, v in node.items()])
     return '"%s" [%s]' % (name, node)
 
 
@@ -60,7 +60,7 @@ digraph G {
 
     # look for keys that aren't linked
     inputs = set(influences.keys())
-    for k, v in influences.iteritems():
+    for k, v in influences.items():
         for t in v:
             inputs.discard(t)
 
@@ -73,11 +73,11 @@ digraph G {
         "cluster_tools": "Tools"
     }
 
-    for target, infls in influences.iteritems():
+    for target, infls in influences.items():
         group = classify_target(target, infls, dependencies, inputs, order_only)
         groups[group].add(target)
 
-    for k, v in sorted(groups.iteritems()):
+    for k, v in sorted(groups.items()):
         label = ""
         if k in labels:
             label = 'label="%s"' % labels[k]
@@ -85,7 +85,7 @@ digraph G {
         nodes.append("%s_DUMMY [shape=point style=invis]" % k)
         f.write('subgraph "%s" { %s graph[style=dotted] %s }\n' % (k, label, ';\n'.join(nodes)))
 
-    for k, v in influences.iteritems():
+    for k, v in influences.items():
         for t in sorted(v):
             f.write('"%s" -> "%s";\n' % (k, t))
 

@@ -3,6 +3,9 @@ import os
 
 
 def parse_timing_db(filename):
+    if not os.path.isfile(filename):
+        return {}
+
     lines = [i.strip().split() for i in open(filename)]
     lines.reverse()
     cur_run_bid = ''
