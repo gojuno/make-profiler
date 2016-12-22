@@ -82,7 +82,7 @@ digraph G {
         if k in labels:
             label = 'label="%s"' % labels[k]
         nodes = [dot_node(t, performance) for t in v]
-        nodes.append("%s_DUMMY [shape=point style=invis]" % k)
+        nodes.append("\"%s_DUMMY\" [shape=point style=invis]" % k)
         f.write('subgraph "%s" { %s graph[style=dotted] %s }\n' % (k, label, ';\n'.join(nodes)))
 
     for k, v in influences.items():
