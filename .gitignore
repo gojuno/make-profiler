@@ -3,3 +3,6 @@
 *.db
 make.png
 make.dot
+Makefile*
+config.inc.sh
+make_profile.db
