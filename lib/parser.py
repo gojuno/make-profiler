@@ -88,6 +88,7 @@ def get_dependencies_influences(ast):
     dependencies = {}
     influences = collections.defaultdict(set)
     order_only = set()
+    indirect_influences = collections.defaultdict(set)
 
     for item_t, item in ast:
         if item_t != Tokens.target:
@@ -105,5 +106,14 @@ def get_dependencies_influences(ast):
         for k in order_deps:
             influences[k]
         order_only.update(order_deps)
-    return (dependencies, influences, order_only)
 
+    def recurse_indirect_influences(original_target, recurse_target):
+        indirect_influences[original_target].update(influences[recurse_target])
+        for t in influences[recurse_target]:
+            recurse_indirect_influences(original_target, t)
+
+    for original_target, targets in influences.items():
+        for t in targets:
+            recurse_indirect_influences(original_target, t)
+
+    return dependencies, influences, order_only, indirect_influences

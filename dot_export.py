@@ -13,7 +13,7 @@ from lib.timing import parse_timing_db
 
 
 def classify_target(name, influences, dependencies, inputs, order_only):
-    group = ("_".join(name.split('/', 2)[:2])).replace('.', '')
+    group = ''
     if name not in dependencies:
         group = "cluster_not_implemented"
     elif name in inputs:
@@ -138,7 +138,7 @@ def main(argv):
         action='store',
         dest='dot_filename',
         type=str,
-        default=None,
+        default='make.dot',
         help='dot filename (default: stdout)')
     options.add_argument(
         '-p',
@@ -156,18 +156,21 @@ def main(argv):
     ast = parse(in_file)
 
     performance = parse_timing_db(args.db_filename)
-    deps, influences, order_only = get_dependencies_influences(ast)
+    deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
 
     export_dot(
         dot_file,
         influences,
         deps,
         order_only,
-        performance
+        performance,
+        indirect_influences
     )
+    dot_file.close()
+
 
     render_dot(
-        dot_file,
+        args.dot_filename,
         args.png_filename
     )
 

@@ -76,8 +76,8 @@ def main(argv):
 
     args = options.parse_args(argv)
 
-    in_file = open(args.out_filename, 'r') if args.in_filename else sys.stdin
-    out_file = open(args.in_filename, 'w') if args.out_filename else sys.stdout
+    in_file = open(args.in_filename, 'r') if args.in_filename else sys.stdin
+    out_file = open(args.out_filename, 'w') if args.out_filename else sys.stdout
 
     ast = parse(in_file)
 

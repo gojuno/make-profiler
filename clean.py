@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
 import os
+import sys
 import logging
 import shutil
+import argparse
 
 from lib.parser import parse, get_dependencies_influences, Tokens
 
@@ -44,7 +46,7 @@ def main(argv):
         help='Targets to process')
 
     args = options.parse_args(argv)
-    in_file = open(args.out_filename, 'r') if args.in_filename else sys.stdin
+    in_file = open(args.in_filename, 'r') if args.in_filename else sys.stdin
 
     ast = parse(in_file)
     deps, influences, order_only = get_dependencies_influences(ast)

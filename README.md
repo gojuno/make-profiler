@@ -3,8 +3,9 @@
 
 Example of usage:
 
-    python3 preprocess.py -i Makefile -o Makefile_work.mk
-    make -j -k -f Makefile_work.mk
-    python3 dot_export.py -i Makefile -db profile.db > make.dot
+    ./preprocess.py -i Makefile_template -o Makefile
+    ./clean.py -i Makefile_template any_targets you_like
+    make -j -k
+    ./dot_export.py -i Makefile_template
     xdg-open make.png
 
