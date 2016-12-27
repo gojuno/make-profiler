@@ -57,7 +57,7 @@ def dot_node(name, performance):
     return '"%s" [%s]' % (name, node)
 
 
-def export_dot(f, influences, dependencies, order_only, performance):
+def export_dot(f, influences, dependencies, order_only, performance, indirect_influences):
     f.write("""
 digraph G {
     rankdir="BT"
@@ -95,7 +95,10 @@ digraph G {
 
     for k, v in influences.items():
         for t in sorted(v):
-            f.write('"%s" -> "%s";\n' % (k, t))
+            if t in indirect_influences[k]:
+                f.write('"%s" -> "%s" [color="#00000033",weight="0",style="dashed"];\n' % (k, t))
+            else:
+                f.write('"%s" -> "%s";\n' % (k, t))
 
     f.write('cluster_inputs_DUMMY -> cluster_tools_DUMMY -> cluster_result_DUMMY [ style=invis ];')
 
