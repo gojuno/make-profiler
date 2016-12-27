@@ -6,6 +6,7 @@ import sys
 import datetime
 
 import collections
+from subprocess import Popen, PIPE
 
 from lib.parser import parse, get_dependencies_influences, Tokens
 from lib.timing import parse_timing_db
@@ -104,6 +105,14 @@ digraph G {
     f.write('}')
 
 
+def render_dot(dot_filename, image_filename):
+    unflatten = Popen(["unflatten", dot_filename], stdout=PIPE)
+    dot = Popen(["dot", "-Tpng"], stdin=unflatten.stdout, stdout=PIPE)
+    unflatten.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    png = dot.communicate()[0]
+    open(image_filename, 'wb').write(png)
+
+
 def main(argv):
     options = argparse.ArgumentParser(
         description='export graph of targets from Makefile')
@@ -122,17 +131,24 @@ def main(argv):
         default='make_profile.db',
         help='Profile with timings')
     options.add_argument(
-        '-o',
+        '-d',
         action='store',
-        dest='out_filename',
+        dest='dot_filename',
         type=str,
         default=None,
-        help='Makefile to write (default: stdout)')
+        help='dot filename (default: stdout)')
+    options.add_argument(
+        '-p',
+        action='store',
+        dest='png_filename',
+        type=str,
+        default='make.png',
+        help='rendered report image filename (default: make.png)')
 
     args = options.parse_args(argv)
 
-    in_file = open(args.out_filename, 'r') if args.in_filename else sys.stdin
-    out_file = open(args.in_filename, 'w') if args.out_filename else sys.stdout
+    in_file = open(args.in_filename, 'r') if args.in_filename else sys.stdin
+    dot_file = open(args.dot_filename, 'w') if args.dot_filename else sys.stdout
 
     ast = parse(in_file)
 
@@ -140,11 +156,16 @@ def main(argv):
     deps, influences, order_only = get_dependencies_influences(ast)
 
     export_dot(
-        out_file,
+        dot_file,
         influences,
         deps,
         order_only,
         performance
+    )
+
+    render_dot(
+        dot_file,
+        args.png_filename
     )
 
 
