@@ -24,6 +24,7 @@ def clean_target(t, deps):
         rm_node(sub_t)
         clean_target(sub_t, deps)
 
+
 def main(argv):
     options = argparse.ArgumentParser(
         description='export graph of targets from Makefile')

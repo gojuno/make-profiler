@@ -5,12 +5,10 @@ import argparse
 
 from lib.parser import parse, Tokens
 
-
 STUFF_TARGETS = ('stuff',)
 
 
 def generate_makefile(ast, hooks, fd):
-
     def clean(value):
         if type(value) is list:
             return '\n'.join(value)
@@ -86,35 +84,24 @@ def main(argv):
     generate_makefile(
         ast,
         hooks={
-            'start': [
-                'RANDOM_HASH := $(shell hexdump -e \'/1 "%02x"\' -v -n10 < /dev/urandom)',
-                'RUN_DIRECTORY := $(shell pwd)'
-            ],
+            'start':
+                'RANDOM_HASH := $(shell hexdump -e \'/1 "%02x"\' -v -n10 < /dev/urandom)\nRUN_DIRECTORY := $(shell pwd)',
             'before_block':
-                '''echo | awk "{
-                        print strftime(\\"%s\\"),
-                        \\"${RANDOM_HASH}\\",
-                        \\"start\\",
-                        \\"$@\\";
-                    }" >> ''' + args.db_filename +''';
-                mkdir -p ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@''',
+                '\techo | awk "{ print strftime(\\"%s\\"), \\"${RANDOM_HASH}\\", \\"start\\", \\"$@\\"; }" '
+                '>> make_profile.db;'
+                'mkdir -p ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@',
             'after_block':
-                '''echo | awk "{
-                            print
-                                strftime(\\"%s\\"),
-                                \\"${RANDOM_HASH}\\",
-                                \\"finish\\",
-                                \\"$@\\";
-                    }" >> ''' + args.db_filename +''';
-                    ln -s -f ${RANDOM_HASH} ${RUN_DIRECTORY}/logs/latest;
-                    touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt''',
+                '\techo | awk "{ print strftime(\\"%s\\"), \\"${RANDOM_HASH}\\", \\"finish\\", \\"$@\\"; }" '
+                '>> make_profile.db;'
+                'ln -s -f -T ${RANDOM_HASH} ${RUN_DIRECTORY}/logs/latest;'
+                'touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt',
             'before_command':
-                '{',
+                '\t{ ',
             'after_command':
-                ''' || touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch ; } 2>&1
-                | gawk '{print strftime("[%Y-%m-%d %H:%M:%S] ",systime()) $$0 }'
-                | tee -a ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt;
-                test ! -e ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch'''
+                """ || touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch ; } 2>&1"""
+                """ | gawk '{print strftime("[%Y-%m-%d %H:%M:%S] ",systime()) $$0 }'"""
+                """ | tee -a ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt;"""
+                """test ! -e ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch"""
         },
         fd=out_file
     )
