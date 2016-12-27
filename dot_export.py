@@ -1,7 +1,14 @@
+#!/usr/bin/python3
+
+import argparse
 import os
+import sys
 import datetime
+
 import collections
-import pprint
+
+from lib.parser import parse, get_dependencies_influences, Tokens
+from lib.timing import parse_timing_db
 
 
 def classify_target(name, influences, dependencies, inputs, order_only):
@@ -95,3 +102,51 @@ digraph G {
         f.write('cluster_inputs_DUMMY -> cluster_not_implemented_DUMMY -> cluster_tools_DUMMY [ style=invis ];')
         f.write('cluster_result_DUMMY -> cluster_not_implemented_DUMMY -> cluster_order_only_DUMMY [ style=invis ];')
     f.write('}')
+
+
+def main(argv):
+    options = argparse.ArgumentParser(
+        description='export graph of targets from Makefile')
+    options.add_argument(
+        '-i',
+        action='store',
+        dest='in_filename',
+        type=str,
+        default=None,
+        help='Makefile to read (default stdin)')
+    options.add_argument(
+        '-db',
+        action='store',
+        dest='db_filename',
+        type=str,
+        default='make_profile.db',
+        help='Profile with timings')
+    options.add_argument(
+        '-o',
+        action='store',
+        dest='out_filename',
+        type=str,
+        default=None,
+        help='Makefile to write (default: stdout)')
+
+    args = options.parse_args(argv)
+
+    in_file = open(args.out_filename, 'r') if args.in_filename else sys.stdin
+    out_file = open(args.in_filename, 'w') if args.out_filename else sys.stdout
+
+    ast = parse(in_file)
+
+    performance = parse_timing_db(args.db_filename)
+    deps, influences, order_only = get_dependencies_influences(ast)
+
+    export_dot(
+        out_file,
+        influences,
+        deps,
+        order_only,
+        performance
+    )
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

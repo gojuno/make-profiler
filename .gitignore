@@ -1,8 +1,9 @@
+logs
 *.pyc
 *.dot
 *.db
-make.png
-make.dot
-Makefile*
+*.mk
+*.png
+*.dot
 config.inc.sh
 make_profile.db
