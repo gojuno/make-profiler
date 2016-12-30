@@ -85,23 +85,46 @@ def main(argv):
         ast,
         hooks={
             'start':
-                'RANDOM_HASH := $(shell hexdump -e \'/1 "%02x"\' -v -n10 < /dev/urandom)\nRUN_DIRECTORY := $(shell pwd)',
+                [
+                    """RANDOM_HASH := $(shell hexdump -e \'/1 " % 02x"\' -v -n10 < /dev/urandom)""",
+                    """RUN_DIRECTORY := $(shell pwd)"""
+                ],
             'before_block':
-                '\techo | awk "{ print strftime(\\"%s\\"), \\"${RANDOM_HASH}\\", \\"start\\", \\"$@\\"; }" '
-                '>> make_profile.db;'
-                'mkdir -p ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@',
+                """
+                echo
+                | awk "{
+                    print
+                        strftime(\\"%s\\"),
+                        \\"${RANDOM_HASH}\\",
+                        \\"start\\",
+                        \\"$@\\";
+                }"
+                >> make_profile.db;
+                mkdir -p ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@
+                """.replace('make_profile.db', args.db_filename),
             'after_block':
-                '\techo | awk "{ print strftime(\\"%s\\"), \\"${RANDOM_HASH}\\", \\"finish\\", \\"$@\\"; }" '
-                '>> make_profile.db;'
-                'ln -s -f -T ${RANDOM_HASH} ${RUN_DIRECTORY}/logs/latest;'
-                'touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt',
+                """
+                echo |
+                awk "{
+                    print
+                        strftime(\\"%s\\"),
+                        \\"${RANDOM_HASH}\\",
+                        \\"finish\\",
+                        \\"$@\\";
+                }"
+                >> make_profile.db;
+                ln -s -f -T ${RANDOM_HASH} ${RUN_DIRECTORY}/logs/latest;
+                touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt
+                """,
             'before_command':
-                '\t{ ',
+                '{ ',
             'after_command':
-                """ || touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch ; } 2>&1"""
-                """ | gawk '{print strftime("[%Y-%m-%d %H:%M:%S] ",systime()) $$0 }'"""
-                """ | tee -a ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt;"""
-                """test ! -e ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch"""
+                """
+                 || touch ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch ; } 2>&1
+                 | gawk '{print strftime("[%Y-%m-%d %H:%M:%S] ",systime()) $$0 }'
+                 | tee -a ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/log.txt;
+                test ! -e ${RUN_DIRECTORY}/logs/${RANDOM_HASH}/$@/failed.touch
+                """
         },
         fd=out_file
     )

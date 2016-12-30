@@ -8,4 +8,3 @@ Example of usage:
     make -j -k
     ./dot_export.py -i Makefile_template
     xdg-open make.png
-
