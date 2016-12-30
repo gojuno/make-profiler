@@ -38,7 +38,7 @@ def dot_node(name, performance):
             if target_performance["isdir"]:
                 node['color'] = ".2 .3 1.0"
         if target_performance["failed"]:
-        	node['color'] = ".5 .3 1.0"
+        	node['color'] = ".05 .3 1.0"
         timing_sec = 0
         if 'start_prev' in target_performance:
             timing_sec = target_performance["finish_prev"] - target_performance["start_prev"]
