@@ -26,20 +26,26 @@ def parse_timing_db(filename):
                 "current": False,
                 "running": False,
                 "done": os.path.exists(target),
-                "isdir": os.path.isdir(target),
-                "failed": os.path.exists('logs/%s/%s/failed.touch' % (bid, target))
+                "isdir": os.path.isdir(target)
             }
 
-        logpath ='logs/%s/%s/log.txt' % (bid, target)
+        logpath = 'logs/%s/%s/log.txt' % (bid, target)
         if "log" not in targets[target] and os.path.exists(logpath):
             targets[target]["log"] = logpath
+
+        failpath = 'logs/%s/%s/failed.touch' % (bid, target)
+        if "failed" not in targets[target] and os.path.exists(failpath):
+            targets[target]["failed"] = os.path.exists(failpath)
 
         if bid == cur_run_bid:
             targets[target]["current"] = True
             targets[target][action + "_current"] = timestamp
             if "finish_current" not in targets[target]:
-                targets[target]["finish_current"] = float(time.time())
-                targets[target]["running"] = True
+                if targets[target]["failed"]:
+                    targets[target]["finish_current"] = os.path.getmtime(failpath)
+                else:
+                    targets[target]["finish_current"] = float(time.time())
+                    targets[target]["running"] = True
 
         if not (bid == cur_run_bid):
             if "prev" not in targets[target] and action == 'finish':
