@@ -27,7 +27,12 @@ def parse_timing_db(filename):
                 "running": False,
                 "done": os.path.exists(target),
                 "isdir": os.path.isdir(target),
+                "failed": os.path.exists('logs/%s/%s/failed.touch' % (bid, target))
             }
+
+        logpath ='logs/%s/%s/log.txt' % (bid, target)
+        if "log" not in targets[target] and os.path.exists(logpath):
+            targets[target] = logpath
 
         if bid == cur_run_bid:
             targets[target]["current"] = True

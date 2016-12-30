@@ -37,12 +37,16 @@ def dot_node(name, performance):
             node['color'] = ".7 .3 1.0"
             if target_performance["isdir"]:
                 node['color'] = ".2 .3 1.0"
+        if target_performance["failed"]:
+        	node['color'] = ".5 .3 1.0"
         timing_sec = 0
         if 'start_prev' in target_performance:
             timing_sec = target_performance["finish_prev"] - target_performance["start_prev"]
         if 'finish_current' in target_performance and 'start_current' in target_performance:
             timing_sec = target_performance["finish_current"] - target_performance["start_current"]
         timing = str(datetime.timedelta(seconds=int(timing_sec)))
+        if 'log' in target_performance:
+            node["URL"] = target_performance["log"]
         if timing != '0:00:00':
             node["label"] += '\\n%s\\r' % timing
             node['fontsize'] = min(max(timing_sec ** .5, node['fontsize']), 100)
@@ -110,7 +114,7 @@ digraph G {
 
 def render_dot(dot_filename, image_filename):
     unflatten = Popen(["unflatten", dot_filename], stdout=PIPE)
-    dot = Popen(["dot", "-Tpng"], stdin=unflatten.stdout, stdout=PIPE)
+    dot = Popen(["dot", "-Tsvg"], stdin=unflatten.stdout, stdout=PIPE)
     unflatten.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
     png = dot.communicate()[0]
     open(image_filename, 'wb').write(png)
@@ -143,10 +147,10 @@ def main(argv):
     options.add_argument(
         '-p',
         action='store',
-        dest='png_filename',
+        dest='svg_filename',
         type=str,
-        default='make.png',
-        help='rendered report image filename (default: make.png)')
+        default='make.svg',
+        help='rendered report image filename (default: make.svg)')
 
     args = options.parse_args(argv)
 
@@ -171,7 +175,7 @@ def main(argv):
 
     render_dot(
         args.dot_filename,
-        args.png_filename
+        args.svg_filename
     )
 
 
