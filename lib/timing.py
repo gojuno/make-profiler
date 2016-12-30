@@ -32,7 +32,7 @@ def parse_timing_db(filename):
 
         logpath ='logs/%s/%s/log.txt' % (bid, target)
         if "log" not in targets[target] and os.path.exists(logpath):
-            targets[target] = logpath
+            targets[target]["log"] = logpath
 
         if bid == cur_run_bid:
             targets[target]["current"] = True
