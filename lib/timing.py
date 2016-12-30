@@ -34,7 +34,7 @@ def parse_timing_db(filename):
             targets[target]["log"] = logpath
 
         failpath = 'logs/%s/%s/failed.touch' % (bid, target)
-        if "failed" not in targets[target] and os.path.exists(failpath):
+        if "failed" not in targets[target]:
             targets[target]["failed"] = os.path.exists(failpath)
 
         if bid == cur_run_bid:
