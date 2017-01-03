@@ -29,7 +29,7 @@ def classify_target(name, influences, dependencies, inputs, order_only):
     return group
 
 
-def dot_node(name, performance):
+def dot_node(name, performance, docstring):
     node = {"label": name, 'fontsize': 10}
     if name in performance:
         target_performance = performance[name]
@@ -53,6 +53,7 @@ def dot_node(name, performance):
     node['group'] = "/".join(name.split('/')[:2])
     node['shape'] = 'box'
     node['style'] = 'filled'
+    node['tooltip'] = docstring
     if name[-4:] == ".png" and os.path.exists(name):
         node['image'] = name
         node['imagescale'] = 'true'
@@ -61,7 +62,7 @@ def dot_node(name, performance):
     return '"%s" [%s]' % (name, node)
 
 
-def export_dot(f, influences, dependencies, order_only, performance, indirect_influences):
+def export_dot(f, influences, dependencies, order_only, performance, indirect_influences, docs):
     f.write("""
 digraph G {
     rankdir="BT"
@@ -93,7 +94,7 @@ digraph G {
         label = ""
         if k in labels:
             label = 'label="%s"' % labels[k]
-        nodes = [dot_node(t, performance) for t in v]
+        nodes = [dot_node(t, performance, docs.get(t,t)) for t in v]
         nodes.append("\"%s_DUMMY\" [shape=point style=invis]" % k)
         f.write('subgraph "%s" { %s graph[style=dotted] %s }\n' % (k, label, ';\n'.join(nodes)))
 
@@ -158,9 +159,10 @@ def main(argv):
     dot_file = open(args.dot_filename, 'w') if args.dot_filename else sys.stdout
 
     ast = parse(in_file)
-
+    docs = dict([(i[1]['target'], i[1]['docs']) for i in ast if i[0] == 'target'])
     performance = parse_timing_db(args.db_filename)
     deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
+
 
     export_dot(
         dot_file,
@@ -168,7 +170,8 @@ def main(argv):
         deps,
         order_only,
         performance,
-        indirect_influences
+        indirect_influences,
+        docs
     )
     dot_file.close()
 

@@ -1,4 +1,5 @@
 import collections
+import re
 
 from more_itertools import peekable
 
@@ -27,8 +28,8 @@ def tokenizer(fd):
         # skip empty lines
         if not strip_line:
             continue
-        # skip comments
-        if strip_line[0] == '#':
+        # skip comments, don't skip docstrings
+        if strip_line[0] == '#' and line[:2] != '##':
             continue
         elif line[0] == '\t':
             yield (Tokens.command, glue_multiline(line))
@@ -44,19 +45,17 @@ def parse(fd):
 
     def parse_target(token):
         line = token[1]
-        target, deps = line.split(':', 1)
-        raw_deps = deps.strip().split('|', 1)
-        deps = raw_deps[0]
-        order_deps = raw_deps[1] if raw_deps[1:] else ''
+        target, deps, order_deps, docstring = re.match('(.+): \s? ([^|#]+)? \s? [|]? \s? ([^##]+)? \s?  \s? ([#][#].+)?', line, re.X).groups()
         body = parse_body()
         ast.append((
             token[0],
             {
                 'target': target.strip(),
                 'deps': [
-                    sorted(deps.split()) if deps else [],
-                    list(order_deps.split()) if order_deps else []
+                    sorted(deps.strip().split()) if deps else [],
+                    sorted(order_deps.strip().split()) if order_deps else []
                 ],
+                'docs': docstring.strip().strip('#').strip() if docstring else target,
                 'body': body
             })
         )
