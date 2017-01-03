@@ -6,7 +6,7 @@ import logging
 import shutil
 import argparse
 
-from lib.parser import parse, get_dependencies_influences, Tokens
+from make_profiler.parser import parse, get_dependencies_influences, Tokens
 
 
 def rm_node(node):
@@ -27,7 +27,7 @@ def clean_target(t, deps):
         clean_target(sub_t, deps)
 
 
-def main(argv):
+def main(argv=sys.argv[1:]):
     options = argparse.ArgumentParser(
         description='export graph of targets from Makefile')
     options.add_argument(
@@ -56,4 +56,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

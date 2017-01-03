@@ -8,8 +8,8 @@ import datetime
 import collections
 from subprocess import Popen, PIPE
 
-from lib.parser import parse, get_dependencies_influences, Tokens
-from lib.timing import parse_timing_db
+from make_profiler.parser import parse, get_dependencies_influences, Tokens
+from make_profiler.timing import parse_timing_db
 
 
 def classify_target(name, influences, dependencies, inputs, order_only):
@@ -121,7 +121,7 @@ def render_dot(dot_filename, image_filename):
     open(image_filename, 'wb').write(png)
 
 
-def main(argv):
+def main(argv=sys.argv[1:]):
     options = argparse.ArgumentParser(
         description='export graph of targets from Makefile')
     options.add_argument(
@@ -183,4 +183,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

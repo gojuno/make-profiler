@@ -1,0 +1,55 @@
+import os
+import sys
+import re
+from setuptools import setup
+
+MIN_PYTHON = (2, 7)
+if sys.version_info < MIN_PYTHON:
+    sys.stderr.write("Python {}.{} or later is required\n".format(*MIN_PYTHON))
+    sys.exit(1)
+
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+RE_VERSION = re.compile(r".*__version__ = '(.*?)'", re.S)
+
+try:
+    VERSION = RE_VERSION.match(
+        read(os.path.join('make_profiler', '__init__.py'))).group(1)
+except Exception:
+    raise RuntimeError('Unable to determine version.')
+
+
+setup(
+    name='make-profiler',
+    version=VERSION,
+    author='Darafei Praliaskouski',
+    author_email='komzpa@gojuno.com',
+    maintainer='Alexander Verbitsky',
+    maintainer_email='averbitsky@gojuno.com',
+    description='Profiler for make-files',
+    long_description=read('README.md'),
+    keywords=['profiler', 'make', 'gnu-make'],
+    url='https://git.junolab.net/projects/ALGO/repos/make-profiler',
+    packages=['make_profiler'],
+    test_suite='test',
+    install_requires=(
+        'more-itertools==2.4.1',
+    ),
+    entry_points={
+        'console_scripts': [
+            'clean = make_profiler.cmd_clean:main',
+            'dot_export = make_profiler.cmd_dot_export:main',
+            'preprocess = make_profiler.cmd_preprocess:main'
+        ]
+    },
+    license='BSD',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Topic :: Utilities',
+        'Programming Language :: Python',
+        'License :: OSI Approved :: BSD License',
+    ],
+)

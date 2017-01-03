@@ -1,4 +1,6 @@
 logs
+dist
+*.egg-info
 *.pyc
 *.dot
 *.db

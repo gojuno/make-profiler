@@ -3,7 +3,7 @@
 import sys
 import argparse
 
-from lib.parser import parse, Tokens
+from make_profiler.parser import parse, Tokens
 
 STUFF_TARGETS = ('stuff',)
 
@@ -49,7 +49,7 @@ def generate_makefile(ast, hooks, fd):
                 print_body(item, clean_hooks)
 
 
-def main(argv):
+def main(argv=sys.argv[1:]):
     options = argparse.ArgumentParser(
         description='advanced Makefile processor')
     options.add_argument(
@@ -131,4 +131,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
