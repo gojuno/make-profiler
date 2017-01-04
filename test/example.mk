@@ -7,6 +7,8 @@ NAME='some_name'
 all: \
 	target1 \
 	target2 \
+	unknown \
+	fail \
 	target3 | target4 target5
 
 
@@ -45,3 +47,10 @@ target4:
 
 target5:
 	sleep 5
+
+
+unknown:
+	unknown
+
+fail:
+	exit 2

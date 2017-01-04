@@ -113,74 +113,11 @@ digraph G {
     f.write('}')
 
 
-def render_dot(dot_filename, image_filename):
-    unflatten = Popen(["unflatten", dot_filename], stdout=PIPE)
+def render_dot(dot_fd, image_filename):
+    unflatten = Popen("unflatten", stdin=PIPE, stdout=PIPE)
     dot = Popen(["dot", "-Tsvg"], stdin=unflatten.stdout, stdout=PIPE)
+    unflatten.stdin.write(dot_fd.read().encode('utf-8'))
+    unflatten.stdin.close()
     unflatten.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
-    png = dot.communicate()[0]
+    png, _ = dot.communicate()
     open(image_filename, 'wb').write(png)
-
-
-def main(argv=sys.argv[1:]):
-    options = argparse.ArgumentParser(
-        description='export graph of targets from Makefile')
-    options.add_argument(
-        '-i',
-        action='store',
-        dest='in_filename',
-        type=str,
-        default=None,
-        help='Makefile to read (default stdin)')
-    options.add_argument(
-        '-db',
-        action='store',
-        dest='db_filename',
-        type=str,
-        default='make_profile.db',
-        help='Profile with timings')
-    options.add_argument(
-        '-d',
-        action='store',
-        dest='dot_filename',
-        type=str,
-        default='make.dot',
-        help='dot filename (default: stdout)')
-    options.add_argument(
-        '-p',
-        action='store',
-        dest='svg_filename',
-        type=str,
-        default='make.svg',
-        help='rendered report image filename (default: make.svg)')
-
-    args = options.parse_args(argv)
-
-    in_file = open(args.in_filename, 'r') if args.in_filename else sys.stdin
-    dot_file = open(args.dot_filename, 'w') if args.dot_filename else sys.stdout
-
-    ast = parse(in_file)
-    docs = dict([(i[1]['target'], i[1]['docs']) for i in ast if i[0] == 'target'])
-    performance = parse_timing_db(args.db_filename)
-    deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
-
-
-    export_dot(
-        dot_file,
-        influences,
-        deps,
-        order_only,
-        performance,
-        indirect_influences,
-        docs
-    )
-    dot_file.close()
-
-
-    render_dot(
-        args.dot_filename,
-        args.svg_filename
-    )
-
-
-if __name__ == '__main__':
-    main()

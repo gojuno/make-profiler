@@ -7,5 +7,6 @@ dist
 *.mk
 *.png
 *.dot
+*.svg
 config.inc.sh
 make_profile.db

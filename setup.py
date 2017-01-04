@@ -40,9 +40,8 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'clean = make_profiler.cmd_clean:main',
-            'dot_export = make_profiler.cmd_dot_export:main',
-            'preprocess = make_profiler.cmd_preprocess:main'
+            'profile_make_clean = make_profiler.cmd_clean:main',
+            'profile_make = make_profiler.__main__:main'
         ]
     },
     license='BSD',

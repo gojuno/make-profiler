@@ -1,6 +1,6 @@
+SRC_DIR = $(shell dirname `pwd`)
+
 all:
 	rm -rf logs
-	cat example.mk|python ../preprocess.py > work.mk
-	make -f work.mk
-	cat example.mk|python ../dot_export.py > work.dot
-	dot -Tpng work.dot > work.png
+	export PYTHONPATH=$(SRC_DIR) \
+		&& python ../make_profiler/__main__.py -i -f example.mk all
