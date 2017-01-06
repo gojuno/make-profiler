@@ -24,7 +24,7 @@ def main(argv=sys.argv[1:]):
         action='store',
         dest='in_filename',
         type=str,
-        default='Makfile',
+        default='Makefile',
         help='Makefile to read (default %(default)s)')
     parser.add_argument(
         '-db',
