@@ -18,7 +18,11 @@ logger = logging.getLogger('make_profiler')
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description='Advanced Makefile processor')
-
+    parser.add_argument(
+        '--preprocess_only',
+        dest='preprocess_only',
+        action='store_true',
+        help='Preprocess only')
     parser.add_argument(
         '-f',
         action='store',
@@ -46,11 +50,18 @@ def main(argv=sys.argv[1:]):
     args, unknown_args = parser.parse_known_args(argv)
 
     in_file = open(args.in_filename, 'r')
-    out_file = tempfile.NamedTemporaryFile(mode='w+')
+    if args.preprocess_only:
+        out_file = io.StringIO()
+    else:
+        out_file = tempfile.NamedTemporaryFile(mode='w+')
 
     ast = parse(in_file)
     generate_makefile(ast, out_file, args.db_filename)
     out_file.flush()
+
+    if args.preprocess_only:
+        print(out_file.getvalue())
+        return
 
     if args.target is not None:
         cmd = ['make'] + unknown_args + ['-f', out_file.name, args.target]
