@@ -31,12 +31,12 @@ def main(argv=sys.argv[1:]):
     options = argparse.ArgumentParser(
         description='export graph of targets from Makefile')
     options.add_argument(
-        '-i',
+        '-f',
         action='store',
         dest='in_filename',
         type=str,
-        default=None,
-        help='Makefile to read (default stdin)')
+        default='Makefile',
+        help='Makefile to read (default %(default)s)')
     options.add_argument(
         'targets',
         default=['all'],
