@@ -29,7 +29,7 @@ def clean_target(t, deps):
 
 def main(argv=sys.argv[1:]):
     options = argparse.ArgumentParser(
-        description='export graph of targets from Makefile')
+        description='Removes the target and everything this target leads to.')
     options.add_argument(
         '-f',
         action='store',
@@ -52,7 +52,7 @@ def main(argv=sys.argv[1:]):
     deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
 
     for target in args.targets:
-        clean_target(deps, target)
+        clean_target(influences, target)
 
 
 if __name__ == '__main__':
