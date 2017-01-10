@@ -19,12 +19,12 @@ def rm_node(node):
         os.remove(node)
 
 
-def clean_target(t, deps):
-    if t not in deps:
+def clean_target(target, subtree):
+    if target not in subtree:
         return
-    for sub_t in deps[t]:
-        rm_node(sub_t)
-        clean_target(sub_t, deps)
+    for subtarget in subtree[target]:
+        rm_node(subtarget)
+        clean_target(subtarget, subtree)
 
 
 def main(argv=sys.argv[1:]):
@@ -52,7 +52,8 @@ def main(argv=sys.argv[1:]):
     deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
 
     for target in args.targets:
-        clean_target(influences, target)
+        rm_node(target)
+        clean_target(target, influences)
 
 
 if __name__ == '__main__':
