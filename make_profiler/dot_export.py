@@ -30,7 +30,7 @@ def classify_target(name, influences, dependencies, inputs, order_only):
 
 
 def dot_node(name, performance, docstring):
-    node = {"label": name, 'fontsize': 10}
+    node = {"label": name, 'fontsize': 3}
     if name in performance:
         target_performance = performance[name]
         if target_performance["done"]:
@@ -66,6 +66,7 @@ def export_dot(f, influences, dependencies, order_only, performance, indirect_in
     f.write("""
 digraph G {
     rankdir="BT"
+    size=26.66666,15
     ratio=0.5625
     node [shape="box"]
 """)
