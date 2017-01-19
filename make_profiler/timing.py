@@ -1,5 +1,5 @@
-import time
 import os
+import time
 
 
 def parse_timing_db(filename):
@@ -23,34 +23,34 @@ def parse_timing_db(filename):
 
         if target not in targets:
             targets[target] = {
-                "current": False,
-                "running": False,
-                "done": os.path.exists(target),
-                "isdir": os.path.isdir(target)
+                'current': False,
+                'running': False,
+                'done': os.path.exists(target),
+                'isdir': os.path.isdir(target)
             }
 
         logpath = 'logs/%s/%s/log.txt' % (bid, target)
-        if "log" not in targets[target] and os.path.exists(logpath):
-            targets[target]["log"] = logpath
+        if 'log' not in targets[target] and os.path.exists(logpath):
+            targets[target]['log'] = logpath
 
         failpath = 'logs/%s/%s/failed.touch' % (bid, target)
-        if "failed" not in targets[target]:
-            targets[target]["failed"] = os.path.exists(failpath)
+        if 'failed' not in targets[target]:
+            targets[target]['failed'] = os.path.exists(failpath)
 
         if bid == cur_run_bid:
-            targets[target]["current"] = True
-            targets[target][action + "_current"] = timestamp
-            if "finish_current" not in targets[target]:
-                if targets[target]["failed"]:
-                    targets[target]["finish_current"] = os.path.getmtime(failpath)
+            targets[target]['current'] = True
+            targets[target][action + '_current'] = timestamp
+            if 'finish_current' not in targets[target]:
+                if targets[target]['failed']:
+                    targets[target]['finish_current'] = os.path.getmtime(failpath)
                 else:
-                    targets[target]["finish_current"] = float(time.time())
-                    targets[target]["running"] = True
+                    targets[target]['finish_current'] = float(time.time())
+                    targets[target]['running'] = True
 
         if not (bid == cur_run_bid):
-            if "prev" not in targets[target] and action == 'finish':
-                targets[target]["prev"] = bid
-                targets[target][action + "_prev"] = timestamp
-            elif action == 'start' and targets[target].get("prev") == bid:
-                targets[target][action + "_prev"] = timestamp
+            if 'prev' not in targets[target] and action == 'finish':
+                targets[target]['prev'] = bid
+                targets[target][action + '_prev'] = timestamp
+            elif action == 'start' and targets[target].get('prev') == bid:
+                targets[target][action + '_prev'] = timestamp
     return targets

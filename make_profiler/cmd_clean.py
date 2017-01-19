@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import os
-import sys
-import logging
-import shutil
 import argparse
+import logging
+import os
+import shutil
+import sys
 
-from make_profiler.parser import parse, get_dependencies_influences, Tokens
+from make_profiler.parser import parse, get_dependencies_influences
 
 
 def rm_node(node):

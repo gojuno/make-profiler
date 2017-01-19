@@ -25,9 +25,11 @@ def tokenizer(fd):
 
     for line_num, line in it:
         strip_line = line.strip()
+
         # skip empty lines
         if not strip_line:
             continue
+
         # skip comments, don't skip docstrings
         if strip_line[0] == '#' and line[:2] != '##':
             continue
@@ -45,7 +47,11 @@ def parse(fd):
 
     def parse_target(token):
         line = token[1]
-        target, deps, order_deps, docstring = re.match('(.+): \s? ([^|#]+)? \s? [|]? \s? ([^##]+)? \s?  \s? ([#][#].+)?', line, re.X).groups()
+        target, deps, order_deps, docstring = re.match(
+            '(.+): \s? ([^|#]+)? \s? [|]? \s? ([^##]+)? \s?  \s? ([#][#].+)?',
+            line,
+            re.X
+        ).groups()
         body = parse_body()
         ast.append((
             token[0],

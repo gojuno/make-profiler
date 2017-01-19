@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
-import sys
-import argparse
-
-from make_profiler.parser import parse, Tokens
+from make_profiler.parser import Tokens
 
 STUFF_TARGETS = ('stuff',)
 
@@ -51,6 +48,7 @@ HOOKS = {
         """
 }
 
+
 def generate_makefile(ast, fd, db_filename):
     def clean(value):
         if type(value) is list:
@@ -58,7 +56,7 @@ def generate_makefile(ast, fd, db_filename):
         return ' '.join(map(str.strip, value.split('\n')))
 
     clean_hooks = dict(
-        (k, clean(h).replace('make_profile.db',db_filename))
+        (k, clean(h).replace('make_profile.db', db_filename))
         for k, h in HOOKS.items())
 
     def print_body(item, ihooks={}):

@@ -1,19 +1,18 @@
-import sys
 import argparse
 import io
-import os
-import subprocess
-import tempfile
 import logging
+import subprocess
+import sys
+import tempfile
 
+from make_profiler.dot_export import export_dot, render_dot
 from make_profiler.parser import parse, get_dependencies_influences
 from make_profiler.preprocess import generate_makefile
 from make_profiler.timing import parse_timing_db
-from make_profiler.dot_export import export_dot, render_dot
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('make_profiler')
+
 
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(
@@ -69,9 +68,9 @@ def main(argv=sys.argv[1:]):
         subprocess.call(cmd)
 
     docs = dict([
-        (i[1]['target'], i[1]['docs'])
-        for i in ast if i[0] == 'target']
-    )
+                    (i[1]['target'], i[1]['docs'])
+                    for i in ast if i[0] == 'target'
+                    ])
     performance = parse_timing_db(args.db_filename)
     deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
 
@@ -92,6 +91,7 @@ def main(argv=sys.argv[1:]):
         dot_file,
         args.svg_filename
     )
+
 
 if __name__ == '__main__':
     main()

@@ -29,7 +29,7 @@ setup(
     author_email='komzpa@gojuno.com',
     maintainer='Alexander Verbitsky',
     maintainer_email='averbitsky@gojuno.com',
-    description='Profiler for make-files',
+    description='Profiler for Makefiles',
     long_description=read('README.md'),
     keywords=['profiler', 'make', 'gnu-make'],
     url='https://git.junolab.net/projects/ALGO/repos/make-profiler',
