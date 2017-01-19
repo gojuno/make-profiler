@@ -32,7 +32,7 @@ setup(
     description='Profiler for Makefiles',
     long_description=read('README.md'),
     keywords=['profiler', 'make', 'gnu-make'],
-    url='https://git.junolab.net/projects/ALGO/repos/make-profiler',
+    url='https://github.com/gojuno/make-profiler',
     packages=['make_profiler'],
     test_suite='test',
     install_requires=(
