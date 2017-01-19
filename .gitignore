@@ -4,9 +4,7 @@ dist
 *.pyc
 *.dot
 *.db
-*.mk
 *.png
 *.dot
-*.svg
 config.inc.sh
 make_profile.db
