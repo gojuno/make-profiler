@@ -66,7 +66,6 @@ def export_dot(f, influences, dependencies, order_only, performance, indirect_in
     f.write("""
 digraph G {
     rankdir="BT"
-    size=26.66666,15
     ratio=0.5625
     node [shape="box"]
 """)
