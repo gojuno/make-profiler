@@ -30,7 +30,7 @@ def classify_target(name, influences, dependencies, inputs, order_only):
 
 
 def dot_node(name, performance, docstring):
-    node = {"label": name, 'fontsize': 3}
+    node = {"label": name, 'fontsize': 10}
     if name in performance:
         target_performance = performance[name]
         if target_performance["done"]:
