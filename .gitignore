@@ -2,9 +2,6 @@ logs
 dist
 *.egg-info
 *.pyc
-*.dot
 *.db
-*.png
-*.dot
 config.inc.sh
 make_profile.db
