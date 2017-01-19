@@ -4,7 +4,7 @@ Helps managing a large data processing pipeline written in Makefile.
 
 ##Features
 
-* SVG build overview;
+* SVG build overview (example: https://github.com/gojuno/make-profiler/blob/master/make.svg);
 
 * Inline pictures-targets into build overview;
 
@@ -16,9 +16,6 @@ Helps managing a large data processing pipeline written in Makefile.
 
 * Support for self-documented Makefiles according to 
 http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
-
-##Sample overview
-![](make.svg)
 
 ##Example usage
 
