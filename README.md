@@ -19,7 +19,7 @@ http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
 ##Example usage
 
-    pip install make-profiler
+    pip install https://github.com/gojuno/make-profiler/archive/master.zip
 
     cd your_project
     make_profiler -h                # have a look at help
