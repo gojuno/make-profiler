@@ -101,8 +101,10 @@ def get_dependencies_influences(ast):
         target = item['target']
         deps, order_deps = item['deps']
 
-        if target not in ('.PHONY',):
-            dependencies[target] = [deps, order_deps]
+        if target in ('.PHONY',):
+            continue
+
+        dependencies[target] = [deps, order_deps]
 
         # influences
         influences[target]
