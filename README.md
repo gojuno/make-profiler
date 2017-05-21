@@ -1,8 +1,8 @@
-#Makefile Profiler
+# Makefile Profiler
 
 Helps managing a large data processing pipeline written in Makefile.
 
-##Features
+## Features
 
 * SVG build overview (example: https://github.com/gojuno/make-profiler/blob/master/make.svg);
 
@@ -17,7 +17,7 @@ Helps managing a large data processing pipeline written in Makefile.
 * Support for self-documented Makefiles according to 
 http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
-##Example usage
+## Example usage
 
     pip install https://github.com/gojuno/make-profiler/archive/master.zip
 
