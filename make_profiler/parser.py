@@ -38,7 +38,7 @@ def tokenizer(fd):
         elif ':' in line and '=' not in line:
             yield (Tokens.target, glue_multiline(line))
         else:
-            yield (Tokens.expression, line.strip())
+            yield (Tokens.expression, line.strip(' ;\t'))
 
 
 def parse(fd):
