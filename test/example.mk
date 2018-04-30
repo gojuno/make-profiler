@@ -30,7 +30,7 @@ target11:
 	touch $@
 
 target12:
-	sleep 1
+	sleep 5
 	touch $@
 
 cat_graph.png: target2 ## If your target generates visual content, it will be embedded into graph
@@ -47,8 +47,8 @@ tool_target: ## Tool targets are the ones that don't depend on anything and nobo
 	sleep 1
 	touch $@
 
-clean: ## Clean up things from previuous runs
-	make_profile_clean target_order_only_1
+clean: ## Clean up things from previous runs
+	profile_make_clean target_order_only_1
 
 target2:
 	sleep 2

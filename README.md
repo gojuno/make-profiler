@@ -6,6 +6,10 @@ Helps managing a large data processing pipeline written in Makefile.
 
 * SVG build overview (example: https://github.com/gojuno/make-profiler/blob/master/make.svg);
 
+![build graph example](make.png)
+
+* Critical Path is highlighted;
+
 * Inline pictures-targets into build overview;
 
 * Logs for each target marked with timestamps;

@@ -5,6 +5,53 @@ import datetime
 import os
 from subprocess import Popen, PIPE
 
+def critical_path(influences, dependencies, inputs, timing):
+    targets = dict()
+    update_queue = list(inputs)
+    results = list()
+
+    # forward: early start
+    while update_queue:
+        t = update_queue.pop(0)
+        if t not in targets:
+            targets[t] = {"early_start": 0.0}
+        if t in timing:
+            duration = timing[t]['timing_sec']
+        else:
+            duration = 1
+        targets[t]["duration"] = duration
+        targets[t]["early_end"] = targets[t]["early_start"] + duration
+        for z in influences[t]:
+            update_queue.append(z)
+            if z not in targets:
+                targets[z] = {"early_start": targets[t]["early_end"]}
+            else:
+                targets[z]["early_start"] = max(targets[z]["early_start"], targets[t]["early_end"])
+        if not influences[t]:
+            results.append(t)
+
+    # backward: late start
+    update_queue = results
+    while update_queue:
+        t = update_queue.pop(0)
+        if "late_end" not in targets[t]:
+            targets[t]["late_end"] = targets[t]["early_end"]
+        targets[t]["late_start"] = targets[t]["late_end"] - targets[t]["duration"]
+        for d in dependencies.get(t, []):
+            for z in d:
+                if z not in update_queue:
+                    update_queue.append(z)
+                if "late_end" not in targets[z]:
+                    targets[z]["late_end"] = targets[t]["late_start"]
+                else:
+                    targets[z]["late_end"] = min(targets[t]["late_start"], targets[z]["late_end"])
+
+    cp = set()
+    for t, z in targets.items():
+        if z["early_start"] == z["late_start"]:
+            cp.add(t)
+    return cp
+
 
 def classify_target(name, influences, dependencies, inputs, order_only):
     group = ''
@@ -23,27 +70,25 @@ def classify_target(name, influences, dependencies, inputs, order_only):
     return group
 
 
-def dot_node(name, performance, docstring):
-    node = {'label': name, 'fontsize': 10}
+def dot_node(name, performance, docstring, cp):
+    node = {'label': name, 'fontsize': 10, 'color': 'black', 'fillcolor': '#d3d3d3'}
     if name in performance:
         target_performance = performance[name]
         if target_performance['done']:
-            node['color'] = '.7 .3 1.0'
+            node['fillcolor'] = '.7 .3 1.0'
             if target_performance['isdir']:
-                node['color'] = '.2 .3 1.0'
+                node['fillcolor'] = '.2 .3 1.0'
         if target_performance['failed']:
-            node['color'] = '.05 .3 1.0'
-        timing_sec = 0
-        if 'start_prev' in target_performance:
-            timing_sec = target_performance['finish_prev'] - target_performance['start_prev']
-        if 'finish_current' in target_performance and 'start_current' in target_performance:
-            timing_sec = target_performance['finish_current'] - target_performance['start_current']
+            node['fillcolor'] = '.05 .3 1.0'
+        timing_sec = target_performance['timing_sec']
         timing = str(datetime.timedelta(seconds=int(timing_sec)))
         if 'log' in target_performance:
             node['URL'] = target_performance['log']
         if timing != '0:00:00':
             node['label'] += '\\n%s\\r' % timing
             node['fontsize'] = min(max(timing_sec ** .5, node['fontsize']), 100)
+    if name in cp:
+        node['color'] = '#cc0000'
     node['group'] = '/'.join(name.split('/')[:2])
     node['shape'] = 'box'
     node['style'] = 'filled'
@@ -71,6 +116,8 @@ digraph G {
         for t in v:
             inputs.discard(t)
 
+    cp = critical_path(influences, dependencies, inputs, performance)
+
     # cluster labels
     labels = {
         'cluster_inputs': 'Input',
@@ -88,7 +135,7 @@ digraph G {
         label = ''
         if k in labels:
             label = 'label="%s"' % labels[k]
-        nodes = [dot_node(t, performance, docs.get(t, t)) for t in v]
+        nodes = [dot_node(t, performance, docs.get(t, t), cp) for t in v]
         nodes.append('\"%s_DUMMY\" [shape=point style=invis]' % k)
         f.write('subgraph "%s" { %s graph[style=dotted] %s }\n' % (k, label, ';\n'.join(nodes)))
 
@@ -96,6 +143,8 @@ digraph G {
         for t in sorted(v):
             if t in indirect_influences[k]:
                 f.write('"%s" -> "%s" [color="#00000033",weight="0",style="dashed"];\n' % (k, t))
+            elif k in cp and t in cp:
+                f.write('"%s" -> "%s" [color="#cc0000",weight="3",penwidth="3",headclip="true"];\n' % (k, t))
             else:
                 f.write('"%s" -> "%s";\n' % (k, t))
 
@@ -113,5 +162,5 @@ def render_dot(dot_fd, image_filename):
     unflatten.stdin.write(dot_fd.read().encode('utf-8'))
     unflatten.stdin.close()
     unflatten.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
-    png, _ = dot.communicate()
-    open(image_filename, 'wb').write(png)
+    svg, _ = dot.communicate()
+    open(image_filename, 'wb').write(svg)
