@@ -16,7 +16,7 @@ def critical_path(influences, dependencies, inputs, timing):
         if t not in targets:
             targets[t] = {"early_start": 0.0}
         if t in timing:
-            duration = timing[t]['timing_sec']
+            duration = timing[t].get('timing_sec', 1)
         else:
             duration = 1
         targets[t]["duration"] = duration
