@@ -53,8 +53,9 @@ def parse_timing_db(filename):
                 targets[target][action + '_prev'] = timestamp
             elif action == 'start' and targets[target].get('prev') == bid:
                 targets[target][action + '_prev'] = timestamp
-        if 'start_prev' in targets[target]:
-            targets[target]['timing_sec'] = targets[target]['finish_prev'] - targets[target]['start_prev']
+        
         if 'finish_current' in targets[target] and 'start_current' in targets[target]:
             targets[target]['timing_sec'] = targets[target]['finish_current'] - targets[target]['start_current']
+        elif 'start_prev' in targets[target]:
+            targets[target]['timing_sec'] = targets[target]['finish_prev'] - targets[target]['start_prev']
     return targets
