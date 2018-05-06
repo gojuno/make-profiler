@@ -80,7 +80,7 @@ def dot_node(name, performance, docstring, cp):
                 node['fillcolor'] = '.2 .3 1.0'
         if target_performance['failed']:
             node['fillcolor'] = '.05 .3 1.0'
-        timing_sec = target_performance['timing_sec']
+        timing_sec = target_performance.get('timing_sec', 0)
         timing = str(datetime.timedelta(seconds=int(timing_sec)))
         if 'log' in target_performance:
             node['URL'] = target_performance['log']
