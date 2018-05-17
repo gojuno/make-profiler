@@ -23,7 +23,7 @@ http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
 ## Example usage
 
-    sudo apt install python-pip3 graphviz gawk
+    sudo apt install python3-pip graphviz gawk
     sudo pip3 install https://github.com/gojuno/make-profiler/archive/master.zip 
 
     cd your_project
