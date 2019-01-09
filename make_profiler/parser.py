@@ -66,15 +66,15 @@ def parse(fd):
             })
         )
 
+    def next_belongs_to_target():
+        token, _ = it.peek()
+        return token == Tokens.command
+
     def parse_body():
         body = []
         try:
-            while it.peek()[0] != Tokens.target:
-                token = next(it)
-                if token[0] == Tokens.command:
-                    body.append((token[0], token[1]))
-                else:
-                    body.append(token)
+            while next_belongs_to_target():
+                body.append(next(it))
         except StopIteration:
             pass
         return body
