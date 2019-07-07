@@ -163,4 +163,5 @@ def render_dot(dot_fd, image_filename):
     unflatten.stdin.close()
     unflatten.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
     svg, _ = dot.communicate()
+    svg = svg.replace(b'svg width', b'svg disabled-width').replace(b'height', b'disabled-height')
     open(image_filename, 'wb').write(svg)
