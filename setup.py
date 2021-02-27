@@ -42,6 +42,7 @@ setup(
         'console_scripts': [
             'profile_make_clean = make_profiler.cmd_clean:main',
             'profile_make = make_profiler.__main__:main'
+            'profile_make_lint = lint_makefile:main'
         ]
     },
     license='BSD',

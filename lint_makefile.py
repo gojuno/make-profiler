@@ -42,7 +42,7 @@ def validate_orphan_targets(targets, deps):
     return bad_targets
 
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
     all_ok = True
 
@@ -51,8 +51,13 @@ if __name__ == "__main__":
     targets, deps = parse_targets(ast)
 
     for target in validate_orphan_targets(targets, deps):
-        print(target, "is orphan - not marked as [FINAL] and no other target depends on it")
+        print(
+            target, "is orphan - not marked as [FINAL] and no other target depends on it")
         all_ok = False
 
     if not all_ok:
-        raise ValueError(f"Huston, we have a problem.")
+        raise ValueError(f"Houston, we have a problem.")
+
+
+if __name__ == "__main__":
+    main()
