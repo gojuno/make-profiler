@@ -33,6 +33,8 @@ def critical_path(influences, dependencies, inputs, timing):
                 targets[z]["early_start"] = max(targets[z]["early_start"], targets[t]["early_end"])
         if not influences[t]:
             results.append(t)
+            # don't pin the final targets to the timeline
+            targets[z]["pin_timing_tag"] = False
 
     # backward: late start
     update_queue = results
