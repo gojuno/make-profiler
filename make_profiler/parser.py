@@ -61,7 +61,7 @@ def parse(fd):
                     sorted(deps.strip().split()) if deps else [],
                     sorted(order_deps.strip().split()) if order_deps else []
                 ],
-                'docs': docstring.strip().strip('#').strip() if docstring else target,
+                'docs': docstring.strip().strip('#').strip() if docstring else '[EMPTY]',
                 'body': body
             })
         )
