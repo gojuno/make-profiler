@@ -108,7 +108,8 @@ def dot_node(name, performance, docstring, cp):
     node['group'] = '/'.join(name.split('/')[:2])
     node['shape'] = 'box'
     node['style'] = 'filled'
-    node['tooltip'] = docstring
+    # generate title as target name when docstring is empty
+    node['tooltip'] = docstring if docstring else name
     if name[-4:] == '.png' and os.path.exists(name):
         node['image'] = name
         node['imagescale'] = 'true'

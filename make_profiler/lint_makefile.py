@@ -46,8 +46,8 @@ def validate_target_comments(targets: List[TargetData], *args) -> bool:
     is_valid = True
 
     for t in targets:
-        if t.doc == "[EMPTY]":
-            print(f'Target without comments: {t.name}')
+        if not t.doc:
+            print(f"Target without comments: {t.name}")
             is_valid = False
 
     return is_valid

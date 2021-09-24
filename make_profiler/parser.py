@@ -5,9 +5,9 @@ from more_itertools import peekable
 
 
 class Tokens:
-    target = 'target'
-    command = 'command'
-    expression = 'expression'
+    target = "target"
+    command = "command"
+    expression = "expression"
 
 
 def tokenizer(fd):
@@ -61,7 +61,7 @@ def parse(fd):
                     sorted(deps.strip().split()) if deps else [],
                     sorted(order_deps.strip().split()) if order_deps else []
                 ],
-                'docs': docstring.strip().strip('#').strip() if docstring else '[EMPTY]',
+                'docs': docstring.strip().strip('#').strip() if docstring else '',
                 'body': body
             })
         )
