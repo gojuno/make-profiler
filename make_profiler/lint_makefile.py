@@ -1,8 +1,10 @@
 import argparse
+import re
+
+from typing import Callable, Dict, List, Set, Tuple
 
 from make_profiler.parser import parse
-
-FINAL_TAG = "[FINAL]"
+from dataclasses import dataclass
 
 
 def parse_args():
@@ -17,45 +19,90 @@ def parse_args():
     return parser.parse_args()
 
 
-def parse_targets(ast):
+@dataclass
+class TargetData:
+    name: str
+    doc: str
+
+
+def parse_targets(ast: List[Tuple[str, Dict]]) -> Tuple[List[TargetData], Set[str]]:
     target_data = []
     deps_targets = set()
 
     for token_type, data in ast:
         if token_type != "target":
             continue
-        is_final = FINAL_TAG in data.get("docs", "")
-        target_data.append((data["target"], is_final))
+
+        target_data.append(TargetData(name=data["target"], doc=data["docs"]))
+
         for dep_arr in data["deps"]:
             for item in dep_arr:
                 deps_targets.add(item)
-
+                
     return target_data, deps_targets
 
 
-def validate_orphan_targets(targets, deps):
-    bad_targets = []
-    for t, is_final in targets:
-        if t not in deps:
-            if not is_final:
-                bad_targets.append(t)
-    return bad_targets
+def validate_target_comments(targets: List[TargetData], *args) -> bool:
+    is_valid = True
+
+    for t in targets:
+        if not t.doc:
+            print(f"Target without comments: {t.name}")
+            is_valid = False
+
+    return is_valid
+
+
+def validate_orphan_targets(targets: List[TargetData], deps: Set[str]) -> bool:
+    is_valid = True
+    
+    for t in targets:
+        if t.name not in deps:
+            if "[FINAL]" not in t.doc:
+                print(f"{t.name}, is orphan - not marked as [FINAL] and no other target depends on it")
+                is_valid = False
+
+    return is_valid
+
+
+def validate_spaces(lines: List[str]) -> bool:
+    is_valid = True
+
+    regex = re.compile(r'^(?!\t[^\s]|[^\s]) | \n')
+    for i, l in enumerate(lines):
+        if re.match(regex, l):
+            print(f"Line with extra spaces ({i}): {l}")
+            is_valid = False
+
+    return is_valid
+
+
+TARGET_VALIDATORS: Callable[[List[TargetData], Set[str]], bool] = [validate_orphan_targets, validate_target_comments]
+TEXT_VALIDATORS: Callable[[List[str]], bool] = [validate_spaces]
+
+
+def validate(makefile_lines: List[str], targets: List[TargetData], deps: Set[str]):
+    is_valid = True
+
+    for validator in TEXT_VALIDATORS:
+        is_valid = validator(makefile_lines) and is_valid
+
+    for validator in TARGET_VALIDATORS:
+        is_valid = validator(targets, deps) and is_valid
+
+    return is_valid
 
 
 def main():
     args = parse_args()
-    all_ok = True
-
+    
     with open(args.in_filename, "r") as f:
-        ast = parse(f)
+        makefile_lines = f.read().split("\n")
+        ast = parse(makefile_lines)
+    
     targets, deps = parse_targets(ast)
 
-    for target in validate_orphan_targets(targets, deps):
-        print(
-            target, "is orphan - not marked as [FINAL] and no other target depends on it")
-        all_ok = False
-
-    if not all_ok:
+    if not validate(makefile_lines, targets, deps):
         raise ValueError(f"Houston, we have a problem.")
 
 
