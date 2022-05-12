@@ -4,6 +4,7 @@ import logging
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 
 from make_profiler.dot_export import export_dot, render_dot
 from make_profiler.parser import parse, get_dependencies_influences
@@ -43,6 +44,13 @@ def main(argv=sys.argv[1:]):
         type=str,
         default='make.svg',
         help='rendered report image filename (default: make.svg)')
+    parser.add_argument(
+        '-a',
+        action='store',
+        dest='after_date',
+        type=datetime.fromisoformat,
+        default=None,
+        help='Render report image only after specified date (in iso format)')
 
     parser.add_argument('target', nargs='?')
 
@@ -68,10 +76,10 @@ def main(argv=sys.argv[1:]):
         subprocess.call(cmd)
 
     docs = dict([
-                    (i[1]['target'], i[1]['docs'])
-                    for i in ast if i[0] == 'target'
-                    ])
-    performance = parse_timing_db(args.db_filename)
+        (i[1]['target'], i[1]['docs'])
+        for i in ast if i[0] == 'target'
+    ])
+    performance = parse_timing_db(args.db_filename, args.after_date)
     deps, influences, order_only, indirect_influences = get_dependencies_influences(ast)
 
     dot_file = io.StringIO()
