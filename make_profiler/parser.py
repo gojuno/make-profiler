@@ -1,19 +1,22 @@
 import collections
 import re
 
+from enum import Enum
+from typing import Any, Dict, Generator, List, Tuple
+
 from more_itertools import peekable
 
 
-class Tokens:
+class Tokens(str, Enum):
     target = "target"
     command = "command"
     expression = "expression"
 
 
-def tokenizer(fd):
+def tokenizer(fd: List[str]) -> Generator[Tuple[Tokens, str], None, None]:
     it = enumerate(fd)
 
-    def glue_multiline(line):
+    def glue_multiline(line: str) -> str:
         lines = []
         strip_line = line.strip()
         while strip_line[-1] == '\\':
@@ -41,14 +44,14 @@ def tokenizer(fd):
             yield (Tokens.expression, line.strip(' ;\t'))
 
 
-def parse(fd):
+def parse(fd: List[str]) -> List[Tuple[Tokens, Dict[str, Any]]]:
     ast = []
     it = peekable(tokenizer(fd))
 
-    def parse_target(token):
+    def parse_target(token: Tuple[Tokens, str]):
         line = token[1]
         target, deps, order_deps, docstring = re.match(
-            '(.+): \s? ([^|#]+)? \s? [|]? \s? ([^##]+)? \s?  \s? ([#][#].+)?',
+            r'(.+?): \s? ([^|#]+)? \s? [|]? \s? ([^##]+)? \s?  \s? ([#][#].+)?',
             line,
             re.X
         ).groups()
@@ -66,11 +69,11 @@ def parse(fd):
             })
         )
 
-    def next_belongs_to_target():
+    def next_belongs_to_target() -> bool:
         token, _ = it.peek()
         return token == Tokens.command
 
-    def parse_body():
+    def parse_body() -> List[Tuple[Tokens, str]]:
         body = []
         try:
             while next_belongs_to_target():
@@ -89,7 +92,7 @@ def parse(fd):
     return ast
 
 
-def get_dependencies_influences(ast):
+def get_dependencies_influences(ast: List[Tuple[Tokens, Dict[str, Any]]]):
     dependencies = {}
     influences = collections.defaultdict(set)
     order_only = set()
