@@ -50,7 +50,7 @@ def main(argv=sys.argv[1:]):
         dest='after_date',
         type=datetime.fromisoformat,
         default=None,
-        help='Render report image only after specified date (in iso format)')
+        help='Render report image with full target time only after the specified date in iso format (other targets will have a time of 1s)')
 
     parser.add_argument('target', nargs='?')
 
