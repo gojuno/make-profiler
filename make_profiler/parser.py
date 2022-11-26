@@ -149,7 +149,7 @@ def check_include_instruction(filename):
         
     else:
         # create list of included makes
-        # we use join by space and then split by space to process multiple include instructions
+        # we use join by space and then split by space to process multiple included instructions
         makes = ' '.join([x.split('include ')[1] for x in matches]).split(' ')
 
         # add to initial make included makefiles
