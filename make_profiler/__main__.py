@@ -56,8 +56,6 @@ def main(argv=sys.argv[1:]):
 
     args, unknown_args = parser.parse_known_args(argv)
 
-
-
     in_file = check_include_instruction(args.in_filename)
     if args.preprocess_only:
         out_file = io.StringIO()
