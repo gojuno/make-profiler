@@ -7,7 +7,7 @@ import tempfile
 from datetime import datetime
 
 from make_profiler.dot_export import export_dot, render_dot
-from make_profiler.parser import parse, get_dependencies_influences, check_include_instruction
+from make_profiler.parser import parse, get_dependencies_influences
 from make_profiler.preprocess import generate_makefile
 from make_profiler.timing import parse_timing_db
 
@@ -56,7 +56,7 @@ def main(argv=sys.argv[1:]):
 
     args, unknown_args = parser.parse_known_args(argv)
 
-    in_file = check_include_instruction(args.in_filename)
+    in_file = open(args.in_filename, 'r')
     if args.preprocess_only:
         out_file = io.StringIO()
     else:
