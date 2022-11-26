@@ -1,5 +1,7 @@
 import collections
 import re
+import os
+import tempfile
 
 from enum import Enum
 from typing import Any, Dict, Generator, List, Tuple
@@ -127,3 +129,48 @@ def get_dependencies_influences(ast: List[Tuple[Tokens, Dict[str, Any]]]):
             recurse_indirect_influences(original_target, t)
 
     return dependencies, influences, order_only, indirect_influences
+
+
+def check_include_instruction(filename):
+    if not os.path.isfile(filename):
+        return {}
+    
+    with open(filename, 'r') as f:
+        lines = f.read().splitlines()
+
+    # compile regex to find include instructions
+    regex = re.compile('include +')
+    # find rows which consist include instruction and replace multiple spaces with one
+    matches = [re.sub(' +', ' ', string) for string in lines if re.match(regex, string)]
+    
+    # check if input make contains include instructions
+    if len(matches) == 0:
+        temp_make_file = open(filename, 'r')
+        
+    else:
+        # create list of included makes
+        # we use join by space and then split by space to process multiple include instructions
+        makes = ' '.join([x.split('include ')[1] for x in matches]).split(' ')
+
+        # add to initial make included makefiles
+        for i in makes:
+            with open(i, 'r') as fp:
+                lines += fp.read().splitlines()
+
+        # remove from final file all strings with include instruction
+        make_lines_without_instrucion = [string for string in lines if not re.match(regex, string)]
+        # join multiple line to single file
+        final_make = '\n'.join(make_lines_without_instrucion)
+
+        # create temporary file, which we will use 
+        tmp = tempfile.NamedTemporaryFile(mode = 'w+t')
+
+        # open temporary file and write composed make to them
+        with open(tmp.name, 'w') as temp_input_file:
+            temp_input_file.write(final_make)
+
+        temp_make_file = open(tmp.name, 'r')
+        
+    return temp_make_file
+
+    
