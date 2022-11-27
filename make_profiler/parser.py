@@ -1,6 +1,7 @@
 import collections
 import re
 import tempfile
+import sys
 
 from enum import Enum
 from typing import Any, Dict, Generator, List, Tuple
@@ -45,27 +46,33 @@ def tokenizer(fd: List[str]) -> Generator[Tuple[Tokens, str], None, None]:
             yield (Tokens.expression, line.strip(' ;\t'))
 
 
-def parse(fd: List[str]) -> List[Tuple[Tokens, Dict[str, Any]]]:
+def parse(fd: List[str], is_check_loop: Any, loop_check_depth: int) -> List[Tuple[Tokens, Dict[str, Any]]]:
     ast = []
 
-    def insert_included_files(open_file):
-          
-        lines = open_file.read().splitlines()
+    def insert_included_files(open_file, is_check_include_loop, loop_check_depth):
+        
+        # create nested function to check if list of rows cointains include instructions
+        def check_for_includes(input_make, regular_expression):
+            # create list of rows from input make
+            list_of_rows = input_make.split('\n')
+            # find rows which consist include instruction and replace multiple spaces with one
+            matches = [re.sub(' +', ' ', string) for string in list_of_rows if re.match(regular_expression, string)]
 
-        # compile regex to find include instructions
-        regex = re.compile('include +')
-        # find rows which consist include instruction and replace multiple spaces with one
-        matches = [re.sub(' +', ' ', string) for string in lines if re.match(regex, string)]
+            if len(matches) != 0:
+                return True
+            else:
+                return False
 
-        final_make = '\n'.join(lines)
-    
-        if len(matches) != 0:
+        # create nested function to be able insert included makes recursively
+        def replace_include_with_file(input_make, regular_expression):
+            # create list of rows from input make
+            list_of_rows = input_make.split('\n')
             # iterate through input makefile
-            for x in range(0,len(lines)):
+            for x in range(0,len(list_of_rows)):
                 # check if string contains include instruction
-                if re.match(regex, lines[x]):
+                if re.match(regular_expression, list_of_rows[x]):
                     # get names of makefiles from instruction
-                    instruction = re.sub(' +', ' ', lines[x].split('include ')[1])
+                    instruction = re.sub(' +', ' ', list_of_rows[x].split('include ')[1])
                     # split list of included makes to support multiple entrance
                     makes = instruction.split(' ')
         
@@ -80,21 +87,37 @@ def parse(fd: List[str]) -> List[Tuple[Tokens, Dict[str, Any]]]:
                     included_string = '\n'.join(included_instructions)
         
                     # replace include with included instruction 
-                    final_make = final_make.replace(lines[x], included_string, 1)
+                    output_make = input_make.replace(list_of_rows[x], included_string, 1)
+
+            return output_make
+
+        make_full_text = open_file.read()
+
+        # compile regex to find include instructions
+        regex = re.compile('include +')
+        
+        loop_detector = 0
+        
+        # recursively check makefile to check include instruction in included files
+        while check_for_includes(make_full_text, regex):
+            make_full_text = replace_include_with_file(make_full_text, regex)
+            loop_detector += 1
+            if loop_detector > loop_check_depth and is_check_include_loop:
+                raise Exception('Your make chain is looped or too deep (default depth = 20). if you have nesting depth > 20 please set your value with --include_depth option or turn off loop checking with --disable_loop_detection')
 
         # create temporary file, which we will use 
         tmp = tempfile.NamedTemporaryFile(mode = 'w+t')
 
         # open temporary file and write composed make to them
         with open(tmp.name, 'w') as temp_input_file:
-            temp_input_file.write(final_make)
+            temp_input_file.write(make_full_text)
 
         temp_make_file = open(tmp.name, 'r')
         
         return temp_make_file
 
-    
-    it = peekable(tokenizer(insert_included_files(fd)))
+
+    it = peekable(tokenizer(insert_included_files(fd, is_check_loop, loop_check_depth)))
 
     def parse_target(token: Tuple[Tokens, str]):
         line = token[1]

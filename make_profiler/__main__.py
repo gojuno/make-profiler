@@ -51,6 +51,18 @@ def main(argv=sys.argv[1:]):
         type=datetime.fromisoformat,
         default=None,
         help='Render report image with full target time only after the specified date in iso format (other targets will have a time of 1s)')
+    parser.add_argument(
+        '--disable_loop_detection',
+        dest='disable_loop_detection',
+        action='store_false',
+        help='Disable cycle detection for include instructions, also used when the include depth is greater than 20')
+    parser.add_argument(
+        '--include_depth',
+        action='store',
+        dest='include_depth',
+        type=int,
+        default=20,
+        help='Depth of the nesting includes')
 
     parser.add_argument('target', nargs='?')
 
@@ -62,7 +74,7 @@ def main(argv=sys.argv[1:]):
     else:
         out_file = tempfile.NamedTemporaryFile(mode='w+')
 
-    ast = parse(in_file)
+    ast = parse(in_file, args.disable_loop_detection, args.include_depth)
     generate_makefile(ast, out_file, args.db_filename)
     out_file.flush()
 
