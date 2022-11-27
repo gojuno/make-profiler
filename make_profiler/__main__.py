@@ -55,7 +55,7 @@ def main(argv=sys.argv[1:]):
         '--disable_loop_detection',
         dest='disable_loop_detection',
         action='store_false',
-        help='Disable cycle detection for include instructions, also used when the include depth is greater than 20')
+        help='Disable cycle detection for include instructions')
     parser.add_argument(
         '--include_depth',
         action='store',
