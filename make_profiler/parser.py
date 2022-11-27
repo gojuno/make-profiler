@@ -105,13 +105,14 @@ def parse(fd: List[str], is_check_loop: Any, loop_check_depth: int) -> List[Tupl
             if loop_detector > loop_check_depth and is_check_include_loop:
                 raise Exception('Your make chain is looped or too deep (default depth = 20). if you have nesting depth > 20 please set your value with --include_depth option or turn off loop checking with --disable_loop_detection')
 
-        # create temporary file, which we will use 
+        # create temporary file
         tmp = tempfile.NamedTemporaryFile(mode = 'w+t')
 
         # open temporary file and write composed make to them
         with open(tmp.name, 'w') as temp_input_file:
             temp_input_file.write(make_full_text)
 
+        # open temporary file as <class '_io.TextIOWrapper'> to support type compatibiluty with tokenizer() 
         temp_make_file = open(tmp.name, 'r')
         
         return temp_make_file
