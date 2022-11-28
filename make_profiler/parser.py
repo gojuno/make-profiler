@@ -94,7 +94,7 @@ def parse(fd: List[str], is_check_loop: Any, loop_check_depth: int) -> List[Tupl
         make_full_text = open_file.read()
 
         # compile regex to find include instructions
-        regex = re.compile('include +')
+        regex = re.compile(' *s?-?include +')
         
         loop_detector = 0
         
