@@ -46,7 +46,7 @@ def tokenizer(fd: List[str]) -> Generator[Tuple[Tokens, str], None, None]:
             yield (Tokens.expression, line.strip(' ;\t'))
 
 
-def parse(fd: List[str], is_check_loop: Any, loop_check_depth: int) -> List[Tuple[Tokens, Dict[str, Any]]]:
+def parse(fd: List[str], is_check_loop=True, loop_check_depth=20) -> List[Tuple[Tokens, Dict[str, Any]]]:
     ast = []
 
     def insert_included_files(open_file, is_check_include_loop, loop_check_depth):
