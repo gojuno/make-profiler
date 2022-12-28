@@ -10,6 +10,7 @@ from make_profiler.dot_export import export_dot, render_dot
 from make_profiler.parser import parse, get_dependencies_influences
 from make_profiler.preprocess import generate_makefile
 from make_profiler.timing import parse_timing_db
+from make_profiler.report_export import export_report
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('make_profiler')
@@ -110,6 +111,11 @@ def main(argv=sys.argv[1:]):
     render_dot(
         dot_file,
         args.svg_filename
+    )
+
+    export_report(
+        performance,
+        docs
     )
 
 
