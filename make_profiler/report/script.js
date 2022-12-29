@@ -59,7 +59,7 @@ function doRequest() {
             var pipelineTable =
                 `
                 <div id="statusReport">
-                    <img class="img" src='Kontur_logo_main.png' />
+                    <img class="img" src='report/Kontur_logo_main.png' />
                     <div class="vertical-center">
                         <p>PIPELINE DASHBOARD</p>
                     </div>
