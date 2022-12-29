@@ -30,7 +30,7 @@ def export_report(performance,docs):
         elif rec["done"] == True:
             event_type = "completed"
         elif rec["running"] == True:
-            event_type = "started"
+            event_type = "in progress"
             n_in_progress += 1
         else:
             event_type = "??unknown??"
