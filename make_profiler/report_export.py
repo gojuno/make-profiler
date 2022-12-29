@@ -49,7 +49,7 @@ def export_report(performance,docs):
         if event_type == "completed":
             if oldest_completed_target == '':
                 oldest_completed_target = event_time
-            if event_time<oldest_completed_target is None:
+            if event_time<oldest_completed_target:
                 oldest_completed_target = event_time
 
         descr = docs.get(key, '')
