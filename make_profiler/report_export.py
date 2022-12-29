@@ -18,6 +18,7 @@ def export_report(performance,docs):
     n_in_progress=0
     n_failed=0
     n_total = 0
+    oldest_completed_target = ''
     fo.write('{\n')
     fo.write('    "status":[\n')
     for key in performance:
@@ -34,7 +35,6 @@ def export_report(performance,docs):
         else:
             event_type = "??unknown??"
 
-
         #event_time = datetime.fromtimestamp(int(rec['start_current'])).strftime(DATE_FORMAT)
         if 'finish_prev' in rec:
             last_event_time = datetime.fromtimestamp(int(rec['finish_prev'])).strftime(DATE_FORMAT)
@@ -45,6 +45,12 @@ def export_report(performance,docs):
             event_time = datetime.fromtimestamp(int(rec['finish_current'])).strftime(DATE_FORMAT)
         else:
             event_time = last_event_time
+
+        if event_type == "completed":
+            if oldest_completed_target == '':
+                oldest_completed_target = event_time
+            if event_time<oldest_completed_target is None:
+                oldest_completed_target = event_time
 
         descr = docs.get(key, '')
         if n_total > 1:
@@ -70,10 +76,13 @@ def export_report(performance,docs):
         current_status = 'Idle'
 
     fo.write('    "pipeline":{ \n')
-    fo.write('        "nProgress":'+ str(n_in_progress)+',\n')
-    fo.write('        "nEvents":'+str(n_total)+',\n')
-    fo.write('        "nFail":'+str(n_failed)+',\n')
-    fo.write('        "oldestCompleteTime":"2022-11-23T06:49:32.000Z",\n')
+    fo.write('        "nProgress":'+ escape_json_string(n_in_progress)+',\n')
+    fo.write('        "nEvents":'+escape_json_string(n_total)+',\n')
+    fo.write('        "nFail":'+escape_json_string(n_failed)+',\n')
+    if oldest_completed_target == '':
+        fo.write('        "oldestCompleteTime":null,\n')
+    else:
+        fo.write('        "oldestCompleteTime":"' + escape_json_string(oldest_completed_target) + '",\n')
     fo.write('        "presentStatus": "'+current_status+'" \n')
     fo.write('    }\n')
     fo.write('}\n')
