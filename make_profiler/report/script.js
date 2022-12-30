@@ -11,7 +11,7 @@ function filterTarget() {
         for (i = 0; i < tr.length; i++) {
             td = tr[i].getElementsByTagName("td")[0];
             if (td) {
-                txtValue = td.textContent || td.innerText;
+                txtValue = td.childNodes[0].textContent || td.innerText;
                 if (txtValue.toUpperCase() === filter) {
                     tr[i].style.display = "";
                 } else {
@@ -112,13 +112,15 @@ function doRequest() {
                 statusTable += "<td>" + formatDate(recs[i].lastEventTime) + "</td>";
                 statusTable += "<td>" + recs[i].eventType + "</td>";
                 statusTable += "<td>" + formatDate(recs[i].eventTime) + "</td>";
-                statusTable += "<td>" + recs[i].eventDuration + "</td>";
+                statusTable += "<td>" + new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19); + "</td>";
                 statusTable += "<td><a target='_blank' href=" + recs[i].log + ">...</a></td></tr>";
             }
 
             statusTable += "</table>";
 
             document.getElementById("status").innerHTML = pipelineTable + statusTable;
+        } else if (this.status != 200) {
+            document.getElementById("status").innerHTML = "Either use a web server or can not reach status report details!";
         }
     }
     // Sending request 
