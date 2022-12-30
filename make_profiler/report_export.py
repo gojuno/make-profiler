@@ -30,7 +30,7 @@ def export_report(performance,docs):
         elif rec["done"] == True:
             event_type = "completed"
         elif rec["running"] == True:
-            event_type = "in progress"
+            event_type = "started"
             n_in_progress += 1
         else:
             event_type = "??unknown??"
@@ -53,13 +53,14 @@ def export_report(performance,docs):
                 oldest_completed_target = event_time
 
         descr = docs.get(key, '')
+        event_duration=rec.get("timing_sec",0)
         if n_total > 1:
             fo.write(',\n')
         fo.write('        {"eventN":"'+escape_json_string(key) +'",\n')
         fo.write('         "description":"' + escape_json_string(descr) + '", \n')
         fo.write('         "eventType":"'+escape_json_string(event_type)+'",\n')
         fo.write('         "eventTime":"'+escape_json_string(event_time)+'",\n')
-        fo.write('         "eventDuration":' + escape_json_string(rec["timing_sec"]) + ',\n')
+        fo.write('         "eventDuration":' + escape_json_string(event_duration) + ',\n')
         if last_event_time == '':
             fo.write('         "lastEventTime":' + 'null' + ',\n')
         else:
