@@ -120,7 +120,7 @@ function doRequest() {
 
             document.getElementById("status").innerHTML = pipelineTable + statusTable;
         } else if (this.status != 200) {
-            document.getElementById("status").innerHTML = "Either use a web server or can not reach status report details!";
+            document.getElementById("status").innerHTML = "Either not using a web server or can not reach status report details!";
         }
     }
     // Sending request 
