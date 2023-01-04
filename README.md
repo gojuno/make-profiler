@@ -21,6 +21,8 @@ Helps managing a large data processing pipeline written in Makefile.
 - Support for self-documented Makefiles according to
   http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
+- Web-based dashboard to view the target statuses and monitor progress.
+
 ## Example usage
 
     sudo apt install python3-pip graphviz gawk
@@ -39,3 +41,7 @@ Helps managing a large data processing pipeline written in Makefile.
     xdg-open make.svg               # have a look at call graph with timing data
 
     profile_make -a 2022-05-01      # generate overview graph with full target time only after the specified date
+
+    profile_make_viewer -o="~/public_html"   # Create files for web-based dashboard in the public_html folder.
+
+    
