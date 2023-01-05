@@ -39,92 +39,77 @@ setTimeout(function () {
     window.location.reload(1);
 }, 1000 * 5 * 60);
 
-function doRequest() {
-
-    // Creating Our XMLHttpRequest object 
-    var xhr = new XMLHttpRequest();
-
-    // Making our connection  
-    var url = "report.json";
-    xhr.open("GET", url, true);
-
-    // function execute after request is successful 
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-
-            let resp = JSON.parse(this.responseText);
-            let recs = resp.status;
-            let pipeline = resp.pipeline;
-
-            var pipelineTable =
-                `
-                <div id="statusReport">
+getStatus("report.json").then((resp) => {
+    let recs = resp.status;
+    let pipeline = resp.pipeline;
+    var pipelineTable =
+        `
+                    <div id="statusReport">
                     <img class="img" src='report/Kontur_logo_main.png' />
-                    <div class="vertical-center">
-                        <p>PIPELINE DASHBOARD</p>
+                        <div class="vertical-center">
+                            <p>PIPELINE DASHBOARD</p>
+                        </div>
                     </div>
-                </div>
-                <h2>Pipeline Status</h2>
-                <table id="pipelineTable">
-                    <tr>
-                        <td><b>Present Status</b></td>
-                        <td align="center"><b>` + pipeline.presentStatus + `</b></td>
-                    </tr>
-                    <tr>
-                        <td>Targets total</td>
-                        <td align="center">` + pipeline.nEvents + `</td>
-                    </tr>
-                    <tr>
-                        <td>Targets in progress</td>
-                        <td align="center">` + pipeline.nProgress + `</td>
-                    </tr>
-                    <tr>
-                        <td>Targets frozen</td>
-                        <td align="center">0</td>
-                    </tr>
-                    <tr>
-                        <td>Targets failed</td>
-                        <td align="center">` + pipeline.nFail + `</td>
-                    </tr>
-                    <tr>
-                        <td>Oldest completed target</td>
-                        <td align="center">` + formatDate(pipeline.oldestCompleteTime) + `</td>
-                    </tr>
-                </table>
-                <h2>Target status</h2><a id="statusChart" target="_blank" href="make.svg">Status Chart</a></br>
-                <input type="text" id="myInput" onkeyup="filterTarget()" placeholder="Search for target name.." title="Type in a name" />`
+                    <h2>Pipeline Status</h2>
+                    <table id="pipelineTable">
+                        <tr>
+                            <td><b>Present Status</b></td>
+                            <td align="center"><b>` + pipeline.presentStatus + `</b></td>
+                        </tr>
+                        <tr>
+                            <td>Targets total</td>
+                            <td align="center">` + pipeline.nEvents + `</td>
+                        </tr>
+                        <tr>
+                            <td>Targets in progress</td>
+                            <td align="center">` + pipeline.nProgress + `</td>
+                        </tr>
+                        <tr>
+                            <td>Targets frozen</td>
+                            <td align="center">0</td>
+                        </tr>
+                        <tr>
+                            <td>Targets failed</td>
+                            <td align="center">` + pipeline.nFail + `</td>
+                        </tr>
+                        <tr>
+                            <td>Oldest completed target</td>
+                            <td align="center">` + formatDate(pipeline.oldestCompleteTime) + `</td>
+                        </tr>
+                    </table>
+                    <h2>Target status</h2><a id="statusChart" target="_blank" href="make.svg">Status Chart</a></br>
+                    <input type="text" id="myInput" onkeyup="filterTarget()" placeholder="Search for target name.." title="Type in a name" />`
 
 
-            let statusTable = `
-                <table id="statusTable" class="sortable">
-                    <tr class="header">
-                                <th>Target name</th>
-                                <th>Last completed date</th>
-                                <th>Status</th>
-                                <th>Status date</th>
-                                <th>Duration</th>
-                                <th>Log</th>
-                    </tr>`
+    let statusTable = `
+                    <table id="statusTable" class="sortable">
+                        <tr class="header">
+                                    <th>Target name</th>
+                                    <th>Last completed date</th>
+                                    <th>Status</th>
+                                    <th>Status date</th>
+                                    <th>Duration</th>
+                                    <th>Log</th>
+                        </tr>`
 
-            for (var i = 0; i < recs.length; i++) {
-                statusTable += "<tr class=" + recs[i].eventType + ">";
-                statusTable += "<td>" + recs[i].eventN + "<p id='description'>" + recs[i].description + "</p></td>";
-                statusTable += "<td>" + formatDate(recs[i].lastEventTime) + "</td>";
-                statusTable += "<td>" + recs[i].eventType + "</td>";
-                statusTable += "<td>" + formatDate(recs[i].eventTime) + "</td>";
-                statusTable += "<td>" + new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19); + "</td>";
-                statusTable += "<td><a target='_blank' href=" + recs[i].log + ">...</a></td></tr>";
-            }
-
-            statusTable += "</table>";
-
-            document.getElementById("status").innerHTML = pipelineTable + statusTable;
-        } else if (this.status != 200) {
-            document.getElementById("status").innerHTML = "Either not using a web server or can not reach status report details!";
-        }
+    for (var i = 0; i < recs.length; i++) {
+        statusTable += "<tr class=" + recs[i].eventType + ">";
+        statusTable += "<td>" + recs[i].eventN + "<p id='description'>" + recs[i].description + "</p></td>";
+        statusTable += "<td>" + formatDate(recs[i].lastEventTime) + "</td>";
+        statusTable += "<td>" + recs[i].eventType + "</td>";
+        statusTable += "<td>" + formatDate(recs[i].eventTime) + "</td>";
+        statusTable += "<td>" + new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19); + "</td>";
+        statusTable += "<td><a target='_blank' href=" + recs[i].log + ">...</a></td></tr>";
     }
-    // Sending request 
-    xhr.send();
+
+    statusTable += "</table>";
+
+    document.getElementById("status").innerHTML = pipelineTable + statusTable;
+})
+
+async function getStatus(url) {
+    let response = await fetch(url);
+    return response.json();
 }
 
 function formatDate(date) {
@@ -161,5 +146,3 @@ function formatDate(date) {
     return cur_day + " " + hours + ":" + minutes + ":" + seconds;
 
 }
-
-doRequest();
