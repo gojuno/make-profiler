@@ -1,5 +1,5 @@
 function filterTarget() {
-    var input, filter, table, tr, td, i, txtValue;
+    let input, filter, table, tr, td, i, txtValue;
     input = document.getElementById("myInput");
 
     filter = input.value.toUpperCase().split(" ").join("_");
@@ -24,7 +24,7 @@ function filterTarget() {
             td = tr[i].getElementsByTagName("td")[0];
             if (td) {
                 txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                if (txtValue.toUpperCase().includes(filter)) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
@@ -35,77 +35,81 @@ function filterTarget() {
 }
 
 //refresh page every 5 minutes
-setTimeout(function () {
-    window.location.reload(1);
+setInterval(function () {
+    loadStatus();
 }, 1000 * 5 * 60);
 
-getStatus("report.json").then((resp) => {
-    let recs = resp.status;
-    let pipeline = resp.pipeline;
-    var pipelineTable =
-        `
-                    <div id="statusReport">
-                    <img class="img" src='report/Kontur_logo_main.png' />
-                        <div class="vertical-center">
-                            <p>PIPELINE DASHBOARD</p>
+loadStatus = () => {
+    getStatus("report.json").then((resp) => {
+        let recs = resp.status;
+        let pipeline = resp.pipeline;
+        let pipelineTable =
+            `
+                        <div id="statusReport">
+                        <img class="img" src='report/Kontur_logo_main.png' />
+                            <div class="vertical-center">
+                                <p>PIPELINE DASHBOARD</p>
+                            </div>
                         </div>
-                    </div>
-                    <h2>Pipeline Status</h2>
-                    <table id="pipelineTable">
-                        <tr>
-                            <td><b>Present Status</b></td>
-                            <td align="center"><b>` + pipeline.presentStatus + `</b></td>
-                        </tr>
-                        <tr>
-                            <td>Targets total</td>
-                            <td align="center">` + pipeline.nEvents + `</td>
-                        </tr>
-                        <tr>
-                            <td>Targets in progress</td>
-                            <td align="center">` + pipeline.nProgress + `</td>
-                        </tr>
-                        <tr>
-                            <td>Targets frozen</td>
-                            <td align="center">0</td>
-                        </tr>
-                        <tr>
-                            <td>Targets failed</td>
-                            <td align="center">` + pipeline.nFail + `</td>
-                        </tr>
-                        <tr>
-                            <td>Oldest completed target</td>
-                            <td align="center">` + formatDate(pipeline.oldestCompleteTime) + `</td>
-                        </tr>
-                    </table>
-                    <h2>Target status</h2><a id="statusChart" target="_blank" href="make.svg">Status Chart</a></br>
-                    <input type="text" id="myInput" onkeyup="filterTarget()" placeholder="Search for target name.." title="Type in a name" />`
+                        <h2>Pipeline Status</h2>
+                        <table id="pipelineTable">
+                            <tr>
+                                <td><b>Present Status</b></td>
+                                <td align="center"><b>${pipeline.presentStatus}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Targets total</td>
+                                <td align="center">${pipeline.nEvents}</td>
+                            </tr>
+                            <tr>
+                                <td>Targets in progress</td>
+                                <td align="center">${pipeline.nProgress}</td>
+                            </tr>
+                            <tr>
+                                <td>Targets frozen</td>
+                                <td align="center">0</td>
+                            </tr>
+                            <tr>
+                                <td>Targets failed</td>
+                                <td align="center">${pipeline.nFail}</td>
+                            </tr>
+                            <tr>
+                                <td>Oldest completed target</td>
+                                <td align="center">${formatDate(pipeline.oldestCompleteTime)}</td>
+                            </tr>
+                        </table>
+                        <h2>Target status</h2><a id="statusChart" target="_blank" href="make.svg">Status Chart</a></br>
+                        <input type="text" id="myInput" onkeyup="filterTarget()" placeholder="Search for target name.." title="Type in a name" />`
 
 
-    let statusTable = `
-                    <table id="statusTable" class="sortable">
-                        <tr class="header">
-                                    <th>Target name</th>
-                                    <th>Last completed date</th>
-                                    <th>Status</th>
-                                    <th>Status date</th>
-                                    <th>Duration</th>
-                                    <th>Log</th>
-                        </tr>`
+        let statusTable = `
+                        <table id="statusTable" class="sortable">
+                            <tr class="header">
+                                        <th>Target name</th>
+                                        <th>Last completed date</th>
+                                        <th>Status</th>
+                                        <th>Status date</th>
+                                        <th>Duration</th>
+                                        <th>Log</th>
+                            </tr>`
 
-    for (var i = 0; i < recs.length; i++) {
-        statusTable += "<tr class=" + recs[i].eventType + ">";
-        statusTable += "<td>" + recs[i].eventN + "<p id='description'>" + recs[i].description + "</p></td>";
-        statusTable += "<td>" + formatDate(recs[i].lastEventTime) + "</td>";
-        statusTable += "<td>" + recs[i].eventType + "</td>";
-        statusTable += "<td>" + formatDate(recs[i].eventTime) + "</td>";
-        statusTable += "<td>" + new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19); + "</td>";
-        statusTable += "<td><a target='_blank' href=" + recs[i].log + ">...</a></td></tr>";
-    }
+        for (let i = 0; i < recs.length; i++) {
+            statusTable += `<tr class=${recs[i].eventType}>
+            <td>${recs[i].eventN}<p id='description'>${recs[i].description}</p></td>
+            <td>${formatDate(recs[i].lastEventTime)}</td>
+            <td>${recs[i].eventType}</td>
+            <td>${formatDate(recs[i].eventTime)}</td>
+            <td>${new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19)}</td>
+            <td><a target='_blank' href=${recs[i].log}>...</a></td></tr>`;
+        }
 
-    statusTable += "</table>";
+        statusTable += "</table>";
 
-    document.getElementById("status").innerHTML = pipelineTable + statusTable;
-})
+        const status = document.getElementById("status");
+        status.innerHTML = pipelineTable + statusTable;
+        sorttable.makeSortable(status.querySelector('.sortable'));
+    })
+}
 
 async function getStatus(url) {
     let response = await fetch(url);
@@ -118,9 +122,9 @@ function formatDate(date) {
     }
 
     date = new Date(date);
-    var aaaa = date.getUTCFullYear();
-    var gg = date.getUTCDate();
-    var mm = (date.getUTCMonth() + 1);
+    let aaaa = date.getUTCFullYear();
+    let gg = date.getUTCDate();
+    let mm = (date.getUTCMonth() + 1);
 
     if (gg < 10)
         gg = "0" + gg;
@@ -128,11 +132,11 @@ function formatDate(date) {
     if (mm < 10)
         mm = "0" + mm;
 
-    var cur_day = aaaa + "-" + mm + "-" + gg;
+    let cur_day = aaaa + "-" + mm + "-" + gg;
 
-    var hours = date.getUTCHours()
-    var minutes = date.getUTCMinutes()
-    var seconds = date.getUTCSeconds();
+    let hours = date.getUTCHours()
+    let minutes = date.getUTCMinutes()
+    let seconds = date.getUTCSeconds();
 
     if (hours < 10)
         hours = "0" + hours;
@@ -144,5 +148,6 @@ function formatDate(date) {
         seconds = "0" + seconds;
 
     return cur_day + " " + hours + ":" + minutes + ":" + seconds;
-
 }
+
+loadStatus();
