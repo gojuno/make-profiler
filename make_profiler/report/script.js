@@ -40,10 +40,10 @@ setInterval(function () {
 }, 1000 * 5 * 60);
 
 loadStatus = () => {
-    getStatus("report.json").then((resp) => {
-        let recs = resp.status;
-        let pipeline = resp.pipeline;
-        let pipelineTable =
+    getStatus("report.json").then((response) => {
+        const statusRecords = response.status;
+        const pipeline = response.pipeline;
+        const pipelineTable =
             `
                         <div id="statusReport">
                         <img class="img" src='report/Kontur_logo_main.png' />
@@ -64,10 +64,6 @@ loadStatus = () => {
                             <tr>
                                 <td>Targets in progress</td>
                                 <td align="center">${pipeline.nProgress}</td>
-                            </tr>
-                            <tr>
-                                <td>Targets frozen</td>
-                                <td align="center">0</td>
                             </tr>
                             <tr>
                                 <td>Targets failed</td>
@@ -93,14 +89,16 @@ loadStatus = () => {
                                         <th>Log</th>
                             </tr>`
 
-        for (let i = 0; i < recs.length; i++) {
-            statusTable += `<tr class=${recs[i].eventType}>
-            <td>${recs[i].eventN}<p id='description'>${recs[i].description}</p></td>
-            <td>${formatDate(recs[i].lastEventTime)}</td>
-            <td>${recs[i].eventType}</td>
-            <td>${formatDate(recs[i].eventTime)}</td>
-            <td>${new Date(recs[i].eventDuration * 1000).toISOString().slice(11, 19)}</td>
-            <td><a target='_blank' href=${recs[i].log}>...</a></td></tr>`;
+        for (let i = 0; i < statusRecords.length; i++) {
+            statusTable += `<tr class=${statusRecords[i].eventType}>
+            <td>${statusRecords[i].eventN}<p id='description'>${statusRecords[i].description}</p></td>
+            <td>${formatDate(statusRecords[i].lastEventTime)}</td>
+            <td>${statusRecords[i].eventType}</td>
+            <td>${formatDate(statusRecords[i].eventTime)}</td>
+            <td>${new Date(statusRecords[i].eventDuration * 1000).toISOString().slice(11, 19)}</td>
+            <td><a target='_blank' href=${statusRecords[i].log}>...</a></td></tr>`;
+            // toISOString Returns 2011-10-05T14:48:00.000Z From 11 to 19 gives hh:mm:ss
+
         }
 
         statusTable += "</table>";
