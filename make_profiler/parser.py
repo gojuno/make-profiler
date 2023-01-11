@@ -4,7 +4,7 @@ import tempfile
 import sys
 
 from enum import Enum
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Tuple, TextIO
 
 from more_itertools import peekable
 
@@ -46,7 +46,7 @@ def tokenizer(fd: List[str]) -> Generator[Tuple[Tokens, str], None, None]:
             yield (Tokens.expression, line.strip(' ;\t'))
 
 
-def parse(fd: List[str], is_check_loop=True, loop_check_depth=20) -> List[Tuple[Tokens, Dict[str, Any]]]:
+def parse(fd: TextIO, is_check_loop: bool = True, loop_check_depth: int = 20) -> List[Tuple[Tokens, Dict[str, Any]]]:
     ast = []
 
     def insert_included_files(open_file, is_check_include_loop, loop_check_depth):
