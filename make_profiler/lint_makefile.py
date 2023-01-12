@@ -98,7 +98,11 @@ def main():
     
     with open(args.in_filename, "r") as f:
         makefile_lines = f.read().split("\n")
-        ast = parse(makefile_lines)
+
+    # file_object is the stream of data and if once the data is consumed, you can't ask the source to give you the same data again.
+    # so it's the reason why we should open in_file twice
+    with open(args.in_filename, "r") as file:
+        ast = parse(file)
     
     targets, deps = parse_targets(ast)
 
