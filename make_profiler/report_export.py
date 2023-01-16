@@ -16,12 +16,12 @@ def export_report(performance, docs):
     for key in performance:
         rec = performance[key]
         n_total += 1
-        if rec["failed"] == True:
+        if rec["failed"]:
             event_type = "failed"
             n_failed += 1
-        elif rec["done"] == True:
+        elif rec["done"]:
             event_type = "completed"
-        elif rec["running"] == True:
+        elif rec["running"]:
             event_type = "started"
             n_in_progress += 1
         else:

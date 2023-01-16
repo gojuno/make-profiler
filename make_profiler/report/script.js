@@ -36,13 +36,21 @@ function filterTarget() {
 
 //refresh page every 5 minutes
 setInterval(function () {
-    loadStatus();
+    getStatus(url);
 }, 1000 * 5 * 60);
 
-loadStatus = () => {
-    getStatus("report.json").then((response) => {
-        const statusRecords = response.status;
-        const pipeline = response.pipeline;
+const url = "report.json";
+const errorTxt = "Either not using a web server or can not reach status report details!"
+
+async function getStatus(url) {
+    let response = await fetch(url).then((response) => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(errorTxt);
+    }).then((responseJson) => {
+        const statusRecords = responseJson.status;
+        const pipeline = responseJson.pipeline;
         const pipelineTable =
             `
                         <div id="statusReport">
@@ -98,7 +106,6 @@ loadStatus = () => {
             <td>${new Date(statusRecords[i].eventDuration * 1000).toISOString().slice(11, 19)}</td>
             <td><a target='_blank' href=${statusRecords[i].log}>...</a></td></tr>`;
             // toISOString Returns 2011-10-05T14:48:00.000Z From 11 to 19 gives hh:mm:ss
-
         }
 
         statusTable += "</table>";
@@ -107,10 +114,10 @@ loadStatus = () => {
         status.innerHTML = pipelineTable + statusTable;
         sorttable.makeSortable(status.querySelector('.sortable'));
     })
-}
-
-async function getStatus(url) {
-    let response = await fetch(url);
+        .catch((error) => {
+            document.write(errorTxt)
+            console.log(error.message)
+        });;
     return response.json();
 }
 
@@ -148,4 +155,4 @@ function formatDate(date) {
     return cur_day + " " + hours + ":" + minutes + ":" + seconds;
 }
 
-loadStatus();
+getStatus(url);
