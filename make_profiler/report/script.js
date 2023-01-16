@@ -115,10 +115,9 @@ async function getStatus(url) {
         sorttable.makeSortable(status.querySelector('.sortable'));
     })
         .catch((error) => {
-            document.write(errorTxt)
+            document.getElementById("status").innerHTML = errorTxt
             console.log(error.message)
-        });;
-    return response.json();
+        });
 }
 
 function formatDate(date) {
