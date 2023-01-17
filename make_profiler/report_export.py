@@ -76,7 +76,6 @@ def export_report(performance, docs):
     status_list["pipeline"] = pipeline
     status_list["status"] = status
 
-    # not sure about this!
     fo.write(json.dumps(status_list))
 
 
