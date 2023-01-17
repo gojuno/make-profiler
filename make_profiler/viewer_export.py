@@ -16,7 +16,7 @@ def parse_args():
     return parser.parse_args()
 
 def main():
-    file_list = ["Kontur_logo_main.png", "script_u.js", "searchicon.png", "sorttable.js", "style.css", "favicon.png"]
+    file_list = ["Kontur_logo_main.png", "script.js", "searchicon.png", "sorttable.js", "style.css", "favicon.png"]
     args = parse_args()
     output_folder = args.output_folder
     report_folder = os.path.join(os.path.dirname(__file__), output_folder, 'report')
