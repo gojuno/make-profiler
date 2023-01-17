@@ -45,7 +45,7 @@ setup(
             'profile_make_clean = make_profiler.cmd_clean:main',
             'profile_make = make_profiler.__main__:main',
             'profile_make_lint = make_profiler.lint_makefile:main',
-            'profile_make_viewer = make_profiler.viewer_export:main'
+            'profile_make_init_viewer = make_profiler.viewer_export:main'
         ]
     },
     license='BSD',

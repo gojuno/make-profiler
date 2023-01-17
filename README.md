@@ -42,6 +42,6 @@ Helps managing a large data processing pipeline written in Makefile.
 
     profile_make -a 2022-05-01      # generate overview graph with full target time only after the specified date
 
-    profile_make_viewer -o="~/public_html"   # Create files for web-based dashboard in the public_html folder.
+    profile_make_init_viewer -o="~/public_html"   # Create files for web-based dashboard in the public_html folder.
 
     
