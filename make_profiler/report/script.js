@@ -1,3 +1,4 @@
+//gets input text and filters tasks on list which are including related text
 function filterTarget() {
     let input, filter, table, tr, td, i, txtValue;
     input = document.getElementById("myInput");
@@ -40,10 +41,10 @@ setInterval(function () {
 }, 1000 * 5 * 60);
 
 const url = "report.json";
-const errorTxt = "Either not using a web server or can not reach status report details!"
+const errorTxt = "Can not reach status report.json file! Please check pipeline and check related file on server"
 
 async function getStatus(url) {
-    let response = await fetch(url).then((response) => {
+    await fetch(url).then((response) => {
         if (response.ok) {
             return response.json();
         }
@@ -121,37 +122,11 @@ async function getStatus(url) {
 }
 
 function formatDate(date) {
-    if (date === null) {
-        return "";
-    }
-
     date = new Date(date);
-    let aaaa = date.getUTCFullYear();
-    let gg = date.getUTCDate();
-    let mm = (date.getUTCMonth() + 1);
-
-    if (gg < 10)
-        gg = "0" + gg;
-
-    if (mm < 10)
-        mm = "0" + mm;
-
-    let cur_day = aaaa + "-" + mm + "-" + gg;
-
-    let hours = date.getUTCHours()
-    let minutes = date.getUTCMinutes()
-    let seconds = date.getUTCSeconds();
-
-    if (hours < 10)
-        hours = "0" + hours;
-
-    if (minutes < 10)
-        minutes = "0" + minutes;
-
-    if (seconds < 10)
-        seconds = "0" + seconds;
-
-    return cur_day + " " + hours + ":" + minutes + ":" + seconds;
+    //YYYY-mm-dd hh:mm:ss adds 0 if needed
+    return date == null ? "" : ("0" + date.getDate()).slice(-2) + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
+        date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)
+        + ":" + ("0" + date.getSeconds()).slice(-2);
 }
 
 getStatus(url);
