@@ -48,6 +48,9 @@ def export_report(performance, docs):
 
         descr = docs.get(key, '')
         event_duration = rec.get("timing_sec", 0)
+        
+        if last_event_time =='':
+            last_event_time = None
 
         status.append(
             {"eventN": key,
