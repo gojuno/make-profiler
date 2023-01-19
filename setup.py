@@ -3,6 +3,7 @@ import sys
 import re
 from setuptools import setup
 
+
 MIN_PYTHON = (2, 7)
 if sys.version_info < MIN_PYTHON:
     sys.stderr.write("Python {}.{} or later is required\n".format(*MIN_PYTHON))
@@ -35,6 +36,7 @@ setup(
     url='https://github.com/gojuno/make-profiler',
     packages=['make_profiler'],
     test_suite='test',
+    zip_safe=False,
     install_requires=(
         'more-itertools==2.4.1',
     ),
@@ -42,7 +44,8 @@ setup(
         'console_scripts': [
             'profile_make_clean = make_profiler.cmd_clean:main',
             'profile_make = make_profiler.__main__:main',
-            'profile_make_lint = make_profiler.lint_makefile:main'
+            'profile_make_lint = make_profiler.lint_makefile:main',
+            'profile_make_init_viewer = make_profiler.viewer_export:main'
         ]
     },
     license='BSD',
