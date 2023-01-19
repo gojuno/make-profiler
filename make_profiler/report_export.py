@@ -27,15 +27,14 @@ def export_report(performance, docs):
         else:
             event_type = "??unknown??"
 
-        #event_time = datetime.fromtimestamp(int(rec['start_current'])).strftime(DATE_FORMAT)
         if 'finish_prev' in rec:
-            last_event_time = datetime.fromtimestamp(
+            last_event_time = datetime.utcfromtimestamp(
                 int(rec['finish_prev'])).strftime(DATE_FORMAT)
         else:
             last_event_time = ''
 
         if 'start_current' in rec:
-            event_time = datetime.fromtimestamp(
+            event_time = datetime.utcfromtimestamp(
                 int(rec['finish_current'])).strftime(DATE_FORMAT)
         else:
             event_time = last_event_time
