@@ -4,7 +4,7 @@ import tempfile
 import sys
 
 from enum import Enum
-from typing import Any, Dict, Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Tuple, TextIO, Pattern
 
 from more_itertools import peekable
 
@@ -46,13 +46,13 @@ def tokenizer(fd: List[str]) -> Generator[Tuple[Tokens, str], None, None]:
             yield (Tokens.expression, line.strip(' ;\t'))
 
 
-def parse(fd: List[str], is_check_loop=True, loop_check_depth=20) -> List[Tuple[Tokens, Dict[str, Any]]]:
+def parse(fd: TextIO, is_check_loop: bool = True, loop_check_depth: int = 20) -> List[Tuple[Tokens, Dict[str, Any]]]:
     ast = []
 
-    def insert_included_files(open_file, is_check_include_loop, loop_check_depth):
+    def insert_included_files(open_file: TextIO, is_check_include_loop: bool = True, loop_check_depth: int = 20) -> TextIO:
         
         # create nested function to check if list of rows cointains include instructions
-        def check_for_includes(input_make, regular_expression):
+        def check_for_includes(input_make: str, regular_expression: Pattern[str]) -> bool:
             # create list of rows from input make
             list_of_rows = input_make.split('\n')
             # find rows which consist include instruction and replace multiple spaces with one
@@ -64,7 +64,7 @@ def parse(fd: List[str], is_check_loop=True, loop_check_depth=20) -> List[Tuple[
                 return False
 
         # create nested function to be able insert included makes recursively
-        def replace_include_with_file(input_make, regular_expression):
+        def replace_include_with_file(input_make: str, regular_expression: Pattern[str]) -> str:
             # create list of rows from input make
             list_of_rows = input_make.split('\n')
             # iterate through input makefile
