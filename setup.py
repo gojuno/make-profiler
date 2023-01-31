@@ -2,7 +2,7 @@ import os
 import sys
 import re
 from setuptools import setup
-
+from glob import glob
 
 MIN_PYTHON = (2, 7)
 if sys.version_info < MIN_PYTHON:
@@ -48,6 +48,9 @@ setup(
             'profile_make_init_viewer = make_profiler.viewer_export:main'
         ]
     },
+    data_files=[
+        ('report', glob('make_profiler/report/*'))
+    ],
     license='BSD',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
