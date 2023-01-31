@@ -48,9 +48,8 @@ setup(
             'profile_make_init_viewer = make_profiler.viewer_export:main'
         ]
     },
-    data_files=[
-        ('report', glob('make_profiler/report/*'))
-    ],
+    include_package_data=True,
+    package_data={ '': ['report'] },
     license='BSD',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
