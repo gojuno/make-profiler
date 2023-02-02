@@ -25,7 +25,8 @@ def export_report(performance, docs):
             event_type = "started"
             n_in_progress += 1
         else:
-            event_type = "??unknown??"
+            # this usually occures when target is completed, but corresponding file or folder is not found. 	
+            event_type = "completed with no output"
 
         if 'finish_prev' in rec:
             last_event_time = datetime.utcfromtimestamp(
