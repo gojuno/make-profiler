@@ -5,6 +5,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 status_list = {}
 status = []
 
+
 def export_report(performance, docs):
     strOutputFile = 'report.json'
     fo = open(strOutputFile, 'w', encoding="utf-8")
@@ -25,14 +26,22 @@ def export_report(performance, docs):
             event_type = "started"
             n_in_progress += 1
         else:
-            # this usually occures when target is completed, but corresponding file or folder is not found. 	
+            # this usually occurs when target is completed, but corresponding file or folder is not found.
             event_type = "completed with no output"
 
-        if 'finish_prev' in rec:
+        if 'start_current' in rec and rec["done"]:
             last_event_time = datetime.utcfromtimestamp(
-                int(rec['finish_prev'])).strftime(DATE_FORMAT)
+                int(rec['finish_current'])).strftime(DATE_FORMAT)
+        elif 'start_current' in rec and not rec["done"] and not rec["running"] and not rec["failed"]:
+            # this is the case of undefined status, "completed with no output"
+            last_event_time = datetime.utcfromtimestamp(
+                int(rec['finish_current'])).strftime(DATE_FORMAT)
         else:
-            last_event_time = ''
+            if 'finish_prev' in rec:
+                last_event_time = datetime.utcfromtimestamp(
+                    int(rec['finish_prev'])).strftime(DATE_FORMAT)
+            else:
+                last_event_time = ''
 
         if 'start_current' in rec:
             event_time = datetime.utcfromtimestamp(
