@@ -6,7 +6,7 @@ status_list = {}
 status = []
 
 
-def export_report(performance, docs):
+def export_report(performance, docs, targets):
     strOutputFile = 'report.json'
     fo = open(strOutputFile, 'w', encoding="utf-8")
     n_in_progress = 0
@@ -14,7 +14,11 @@ def export_report(performance, docs):
     n_total = 0
     oldest_completed_target = ''
 
+    not_started_targets = set(targets)
+
     for key in performance:
+        not_started_targets.remove(key)
+
         rec = performance[key]
         n_total += 1
         if rec["failed"]:
@@ -71,6 +75,13 @@ def export_report(performance, docs):
              "log": rec["log"]
              }
         )
+
+    for target in not_started_targets:
+        status.append({
+            "eventN": target,
+            "description": docs.get(target, ''),
+            "eventType": "not started"
+        })
 
     if n_in_progress > 0:
         current_status = 'Up and Running'
