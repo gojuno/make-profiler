@@ -101,10 +101,10 @@ async function getStatus(url) {
         for (let i = 0; i < statusRecords.length; i++) {
             statusTable += `<tr class=${statusRecords[i].eventType}>
             <td>${statusRecords[i].eventN}<p id='description'>${statusRecords[i].description}</p></td>
-            <td>${formatDate(statusRecords[i].lastEventTime)}</td>
+            <td>${statusRecords[i].lastEventTime ? formatDate(statusRecords[i].lastEventTime) : '-'}</td>
             <td>${statusRecords[i].eventType}</td>
-            <td>${formatDate(statusRecords[i].eventTime)}</td>
-            <td>${new Date(statusRecords[i].eventDuration * 1000).toISOString().slice(11, 19)}</td>
+            <td>${statusRecords[i].eventTime ? formatDate(statusRecords[i].eventTime) : '-'}</td>
+            <td>${statusRecords[i].eventDuration ? new Date(statusRecords[i].eventDuration * 1000).toISOString().slice(11, 19) : '-'}</td>
             <td><a target='_blank' href=${statusRecords[i].log}>...</a></td></tr>`;
             // toISOString Returns 2011-10-05T14:48:00.000Z From 11 to 19 gives hh:mm:ss
         }
