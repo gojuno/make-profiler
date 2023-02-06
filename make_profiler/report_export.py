@@ -80,7 +80,7 @@ def export_report(performance, docs, targets):
         status.append({
             "eventN": target,
             "description": docs.get(target, ''),
-            "eventType": "not started"
+            "eventType": "never started"
         })
 
     if n_in_progress > 0:
