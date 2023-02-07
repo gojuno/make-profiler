@@ -68,19 +68,19 @@ async function getStatus(url) {
                             </tr>
                             <tr>
                                 <td>Targets total</td>
-                                <td align="center">${pipeline.nEvents}</td>
+                                <td align="center">${pipeline.numberOfTargetsCompleted}</td>
                             </tr>
                             <tr>
                                 <td>Targets in progress</td>
-                                <td align="center">${pipeline.nProgress}</td>
+                                <td align="center">${pipeline.numberOfProgress}</td>
                             </tr>
                             <tr>
                                 <td>Targets failed</td>
-                                <td align="center">${pipeline.nFail}</td>
+                                <td align="center">${pipeline.numberOfTargetsFailed}</td>
                             </tr>
                             <tr>
                                 <td>Oldest completed target</td>
-                                <td align="center">${formatDate(pipeline.oldestCompleteTime)}</td>
+                                <td align="center">${formatDate(pipeline.oldestCompletionTime)}</td>
                             </tr>
                         </table>
                         <h2>Target status</h2><a id="statusChart" target="_blank" href="make.svg">Status Chart</a></br>
@@ -99,13 +99,13 @@ async function getStatus(url) {
                             </tr>`
 
         for (let i = 0; i < statusRecords.length; i++) {
-            statusTable += `<tr class=${statusRecords[i].eventType}>
-            <td>${statusRecords[i].eventN}<p id='description'>${statusRecords[i].description}</p></td>
-            <td>${statusRecords[i].lastEventTime ? formatDate(statusRecords[i].lastEventTime) : '-'}</td>
-            <td>${statusRecords[i].eventType}</td>
-            <td>${statusRecords[i].eventTime ? formatDate(statusRecords[i].eventTime) : '-'}</td>
-            <td>${statusRecords[i].eventDuration ? new Date(statusRecords[i].eventDuration * 1000).toISOString().slice(11, 19) : '-'}</td>
-            <td><a target='_blank' href=${statusRecords[i].log}>...</a></td></tr>`;
+            statusTable += `<tr class=${statusRecords[i].targetType}>
+            <td>${statusRecords[i].targetName}<p id='description'>${statusRecords[i].targetDescription}</p></td>
+            <td>${statusRecords[i].lastTargetCompletionTime ? formatDate(statusRecords[i].lastTargetCompletionTime) : '-'}</td>
+            <td>${statusRecords[i].targetType}</td>
+            <td>${statusRecords[i].targetTime ? formatDate(statusRecords[i].targetTime) : '-'}</td>
+            <td>${statusRecords[i].targetDuration ? new Date(statusRecords[i].targetDuration * 1000).toISOString().slice(11, 19) : '-'}</td>
+            <td><a target='_blank' href=${statusRecords[i].targetLog}>...</a></td></tr>`;
             // toISOString Returns 2011-10-05T14:48:00.000Z From 11 to 19 gives hh:mm:ss
         }
 
