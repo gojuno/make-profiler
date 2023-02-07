@@ -21,14 +21,16 @@ def export_report(performance, docs, targets):
 
         rec = performance[key]
         n_total += 1
-        if rec["failed"]:
+        if rec["running"]:
+            # running flag has the highest priority.
+            # target can be also marked as done, if it was built on previous run.
+            event_type = "started"
+            n_in_progress += 1
+        elif rec["failed"]:
             event_type = "failed"
             n_failed += 1
         elif rec["done"]:
             event_type = "completed"
-        elif rec["running"]:
-            event_type = "started"
-            n_in_progress += 1
         else:
             # this usually occurs when target is completed, but corresponding file or folder is not found.
             event_type = "completed with no output"
