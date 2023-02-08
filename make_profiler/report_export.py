@@ -68,21 +68,21 @@ def export_report(performance, docs, targets):
             last_event_time = None
 
         status.append(
-            {"eventN": key,
-             "description": descr,
-             "eventType": event_type,
-             "eventTime": event_time,
-             "eventDuration": event_duration,
-             "lastEventTime": last_event_time,
-             "log": rec["log"]
+            {"targetName": key,
+             "targetDescription": descr,
+             "targetType": event_type,
+             "targetTime": event_time,
+             "targetDuration": event_duration,
+             "lastTargetCompletionTime": last_event_time,
+             "targetLog": rec["log"]
              }
         )
 
     for target in not_started_targets:
         status.append({
-            "eventN": target,
-            "description": docs.get(target, ''),
-            "eventType": "never started"
+            "targetName": target,
+            "targetDescription": docs.get(target, ''),
+            "targetType": "never started"
         })
 
     if n_in_progress > 0:
@@ -91,10 +91,10 @@ def export_report(performance, docs, targets):
         current_status = 'Idle'
 
     pipeline = {
-        "nProgress": n_in_progress,
-        "nEvents": n_total,
-        "nFail": n_failed,
-        "oldestCompleteTime": oldest_completed_target,
+        "numberOfProgress": n_in_progress,
+        "numberOfTargetsCompleted": n_total,
+        "numberOfTargetsFailed": n_failed,
+        "oldestCompletionTime": oldest_completed_target,
         "presentStatus": current_status
     }
 
