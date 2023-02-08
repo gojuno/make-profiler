@@ -104,9 +104,9 @@ async function getStatus(url) {
             <td>${statusRecords[i].lastTargetCompletionTime ? formatDate(statusRecords[i].lastTargetCompletionTime) : '-'}</td>
             <td>${statusRecords[i].targetType}</td>
             <td>${statusRecords[i].targetTime ? formatDate(statusRecords[i].targetTime) : '-'}</td>
-            <td>${statusRecords[i].targetDuration ? new Date(statusRecords[i].targetDuration * 1000).toISOString().slice(11, 19) : '-'}</td>
-            <td><a target='_blank' href=${statusRecords[i].targetLog}>...</a></td></tr>`;
+            <td>${statusRecords[i].targetDuration ? new Date(statusRecords[i].targetDuration * 1000).toISOString().slice(11, 19) : '-'}</td>`;
             // toISOString Returns 2011-10-05T14:48:00.000Z From 11 to 19 gives hh:mm:ss
+            statusRecords[i].targetLog ? statusTable += `<td><a target='_blank' href=${statusRecords[i].targetLog}>...</a></td></tr>` : statusTable += `<td>-</td></tr>`
         }
 
         statusTable += "</table>";
