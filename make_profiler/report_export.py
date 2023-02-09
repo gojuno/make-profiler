@@ -89,11 +89,14 @@ def export_report(performance, docs, targets):
         current_status = 'Up and Running'
     else:
         current_status = 'Idle'
+    
+    n_never_started = len(not_started_targets)
 
     pipeline = {
-        "numberOfProgress": n_in_progress,
-        "numberOfTargetsCompleted": n_total,
+        "numberOfTargetsInProgress": n_in_progress,
+        "numberOfTargetsTotal": n_total + n_never_started,
         "numberOfTargetsFailed": n_failed,
+        "numberOfTargetsNeverStarted": n_never_started,
         "oldestCompletionTime": oldest_completed_target,
         "presentStatus": current_status
     }
