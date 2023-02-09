@@ -35,11 +35,7 @@ def export_report(performance, docs, targets):
             # this usually occurs when target is completed, but corresponding file or folder is not found.
             event_type = "completed with no output"
 
-        if 'start_current' in rec and rec["done"]:
-            last_event_time = datetime.utcfromtimestamp(
-                int(rec['finish_current'])).strftime(DATE_FORMAT)
-        elif 'start_current' in rec and not rec["done"] and not rec["running"] and not rec["failed"]:
-            # this is the case of undefined status, "completed with no output"
+        if 'start_current' in rec and (event_type == "completed" or event_type == "completed with no output"):
             last_event_time = datetime.utcfromtimestamp(
                 int(rec['finish_current'])).strftime(DATE_FORMAT)
         else:
