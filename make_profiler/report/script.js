@@ -68,15 +68,19 @@ async function getStatus(url) {
                             </tr>
                             <tr>
                                 <td>Targets total</td>
-                                <td align="center">${pipeline.numberOfTargetsCompleted}</td>
+                                <td align="center">${pipeline.numberOfTargetsTotal}</td>
                             </tr>
                             <tr>
                                 <td>Targets in progress</td>
-                                <td align="center">${pipeline.numberOfProgress}</td>
+                                <td align="center">${pipeline.numberOfTargetsInProgress}</td>
                             </tr>
                             <tr>
                                 <td>Targets failed</td>
                                 <td align="center">${pipeline.numberOfTargetsFailed}</td>
+                            </tr>
+                            <tr>
+                                <td>Targets never started</td>
+                                <td align="center">${pipeline.numberOfTargetsNeverStarted}</td>
                             </tr>
                             <tr>
                                 <td>Oldest completed target</td>
