@@ -41,7 +41,7 @@ setInterval(function () {
 }, 1000 * 5 * 60);
 
 const url = "report.json";
-const errorTxt = "Can not reach status report.json file! Please check pipeline and check related file on server"
+let errorTxt = "Can not reach status report.json file! Please check pipeline and check related file on server"
 
 async function getStatus(url) {
     await fetch(url).then((response) => {
@@ -50,6 +50,7 @@ async function getStatus(url) {
         }
         throw new Error(errorTxt);
     }).then((responseJson) => {
+        errorTxt = "Something went wrong parsing report details"
         const statusRecords = responseJson.status;
         const pipeline = responseJson.pipeline;
         const pipelineTable =
