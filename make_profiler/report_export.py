@@ -17,7 +17,8 @@ def export_report(performance, docs, targets):
     not_started_targets = set(targets)
 
     for key in performance:
-        not_started_targets.remove(key)
+        if key in not_started_targets:
+            not_started_targets.remove(key)
 
         rec = performance[key]
         n_total += 1
@@ -59,8 +60,8 @@ def export_report(performance, docs, targets):
 
         descr = docs.get(key, '')
         event_duration = rec.get("timing_sec", 0)
-        
-        if last_event_time =='':
+
+        if last_event_time == '':
             last_event_time = None
 
         status.append(
@@ -85,7 +86,7 @@ def export_report(performance, docs, targets):
         current_status = 'Up and Running'
     else:
         current_status = 'Idle'
-    
+
     n_never_started = len(not_started_targets)
 
     pipeline = {
@@ -101,6 +102,5 @@ def export_report(performance, docs, targets):
     status_list["status"] = status
 
     fo.write(json.dumps(status_list))
-
 
     fo.close()
