@@ -64,6 +64,9 @@ def export_report(performance, docs, targets):
         if last_event_time == '':
             last_event_time = None
 
+        if not "log" in rec:
+            rec["log"] = ""
+
         status.append(
             {"targetName": key,
              "targetDescription": descr,
