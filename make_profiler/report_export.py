@@ -17,66 +17,72 @@ def export_report(performance, docs, targets):
     not_started_targets = set(targets)
 
     for key in performance:
-        if key in not_started_targets:
+        if key in targets:
+            # Only targets which are present in makefile are displayed
             not_started_targets.remove(key)
 
-        rec = performance[key]
-        n_total += 1
-        if rec["running"]:
-            # running flag has the highest priority.
-            # target can be also marked as done, if it was built on previous run.
-            event_type = "started"
-            n_in_progress += 1
-        elif rec["failed"]:
-            event_type = "failed"
-            n_failed += 1
-        elif rec["done"]:
-            event_type = "completed"
-        else:
-            # this usually occurs when target is completed, but corresponding file or folder is not found.
-            event_type = "completed with no output"
-
-        if 'start_current' in rec and (event_type == "completed" or event_type == "completed with no output"):
-            last_event_time = datetime.utcfromtimestamp(
-                int(rec['finish_current'])).strftime(DATE_FORMAT)
-        else:
-            if 'finish_prev' in rec:
-                last_event_time = datetime.utcfromtimestamp(
-                    int(rec['finish_prev'])).strftime(DATE_FORMAT)
+            rec = performance[key]
+            n_total += 1
+            if rec["running"]:
+                # running flag has the highest priority.
+                # target can be also marked as done, if it was built on previous run.
+                event_type = "started"
+                n_in_progress += 1
+            elif rec["failed"]:
+                event_type = "failed"
+                n_failed += 1
+            elif rec["done"]:
+                event_type = "completed"
             else:
-                last_event_time = ''
+                # this usually occurs when target is completed, but corresponding file or folder is not found.
+                event_type = "completed with no output"
 
-        if 'start_current' in rec:
-            event_time = datetime.utcfromtimestamp(
-                int(rec['finish_current'])).strftime(DATE_FORMAT)
-        else:
-            event_time = last_event_time
+            event_time = ""
+            last_event_time = ""
 
-        if event_type == "completed":
-            if oldest_completed_target == '':
-                oldest_completed_target = event_time
-            if event_time < oldest_completed_target:
-                oldest_completed_target = event_time
+            if 'start_current' in rec:
+                # All the targets in the curent run have rec['finish_current']
+                event_time = datetime.utcfromtimestamp(int(rec['finish_current'])).strftime(DATE_FORMAT)
+                #last completed date is just an event date for completed tasks.
+                if event_type == "completed" or event_type == "completed with no output":
+                    last_event_time = event_time
+                #otherwise let's take it from previous run
+                elif ('finish_prev' in rec):
+                    last_event_time = datetime.utcfromtimestamp( int(rec['finish_prev'])).strftime(DATE_FORMAT)
 
-        descr = docs.get(key, '')
-        event_duration = rec.get("timing_sec", 0)
+            else:
+                # target in previous run. there is no timestamp in the current run,
+                # so we use timestamp from the previous run.
+                if ('finish_prev' in rec):
+                    event_time = datetime.utcfromtimestamp( int(rec['finish_prev'])).strftime(DATE_FORMAT)
+                    if event_type != "failed":
+                        last_event_time = event_time
 
-        if last_event_time == '':
-            last_event_time = None
+            if event_type == "completed":
+                if oldest_completed_target == '':
+                    oldest_completed_target = event_time
+                if event_time < oldest_completed_target:
+                    oldest_completed_target = event_time
 
-        if not "log" in rec:
-            rec["log"] = ""
+            descr = docs.get(key, '')
+            event_duration = rec.get("timing_sec", 0)
 
-        status.append(
-            {"targetName": key,
-             "targetDescription": descr,
-             "targetType": event_type,
-             "targetTime": event_time,
-             "targetDuration": event_duration,
-             "lastTargetCompletionTime": last_event_time,
-             "targetLog": rec["log"]
-             }
-        )
+            if last_event_time == '':
+                last_event_time = None
+
+            if not "log" in rec:
+                rec["log"] = ""
+
+            status.append(
+                {"targetName": key,
+                 "targetDescription": descr,
+                 "targetType": event_type,
+                 "targetTime": event_time,
+                 "targetDuration": event_duration,
+                 "lastTargetCompletionTime": last_event_time,
+                 "targetLog": rec["log"]
+                 }
+            )
 
     for target in not_started_targets:
         status.append({
