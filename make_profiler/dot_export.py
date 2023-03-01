@@ -37,9 +37,9 @@ def critical_path(influences, dependencies, inputs, timing):
             targets[t]["pin_timing_tag"] = False
 
     # backward: late start
-    update_queue = results
+    update_queue = set(results)
     while update_queue:
-        t = update_queue.pop(0)
+        t = update_queue.pop()
         if "late_end" not in targets[t]:
             targets[t]["late_end"] = targets[t]["early_end"]
         targets[t]["late_start"] = targets[t]["late_end"] - targets[t]["duration"]
@@ -49,7 +49,7 @@ def critical_path(influences, dependencies, inputs, timing):
                 if targets[z]["timing_tag"] == targets[t]["timing_tag"]:
                     targets[z]["pin_timing_tag"] = False
                 if z not in update_queue:
-                    update_queue.append(z)
+                    update_queue.add(z)
                 if "late_end" not in targets[z]:
                     targets[z]["late_end"] = targets[t]["late_start"]
                 else:
