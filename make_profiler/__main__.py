@@ -32,6 +32,13 @@ def main(argv=sys.argv[1:]):
         default='Makefile',
         help='Makefile to read (default %(default)s)')
     parser.add_argument(
+        '-fD',
+        action='store',
+        dest='dot_filename',
+        type=str,
+        default='dot_file',
+        help='dot file debug (default %(default)s)')
+    parser.add_argument(
         '-db',
         action='store',
         dest='db_filename',
@@ -107,6 +114,8 @@ def main(argv=sys.argv[1:]):
         docs
     )
     dot_file.seek(0)
+    with open(args.dot_filename, 'w') as fd:
+        print(dot_file.getvalue(), file=fd)
 
     render_dot(
         dot_file,
