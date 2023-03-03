@@ -8,12 +8,12 @@ from subprocess import Popen, PIPE
 
 def critical_path(influences, dependencies, inputs, timing):
     targets = dict()
-    update_queue = list(inputs)
-    results = list()
+    update_queue = set(inputs)
+    results = set()
 
     # forward: early start
     while update_queue:
-        t = update_queue.pop(0)
+        t = update_queue.pop()
         if t not in targets:
             targets[t] = {"early_start": 0.0}
         if t in timing:
@@ -26,18 +26,18 @@ def critical_path(influences, dependencies, inputs, timing):
         targets[t]["timing_tag"] = math.ceil(targets[t]["early_end"]/60/10)
         targets[t]["pin_timing_tag"] = True
         for z in influences[t]:
-            update_queue.append(z)
+            update_queue.add(z)
             if z not in targets:
                 targets[z] = {"early_start": targets[t]["early_end"]}
             else:
                 targets[z]["early_start"] = max(targets[z]["early_start"], targets[t]["early_end"])
         if not influences[t]:
-            results.append(t)
+            results.add(t)
             # don't pin the final targets to the timeline
             targets[t]["pin_timing_tag"] = False
 
     # backward: late start
-    update_queue = set(results)
+    update_queue = results
     while update_queue:
         t = update_queue.pop()
         if "late_end" not in targets[t]:
