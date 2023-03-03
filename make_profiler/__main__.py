@@ -32,7 +32,7 @@ def main(argv=sys.argv[1:]):
         default='Makefile',
         help='Makefile to read (default %(default)s)')
     parser.add_argument(
-        '-fD',
+        '-fd',
         action='store',
         dest='dot_filename',
         type=str,
